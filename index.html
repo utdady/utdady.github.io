@@ -442,11 +442,17 @@ body.nav-open .nav-backdrop {
   outline-offset: 3px;
 }
 .hero-scroll {
-  position:absolute; bottom:2.5rem; left:50%;
-  transform:translateX(-50%);
-  display:flex; flex-direction:column; align-items:center; gap:.5rem;
-  opacity:0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  padding-top: 0.25rem;
+  opacity: 0;
   animation: fadeIn 1s ease 1.2s forwards;
+  pointer-events: none;
 }
 .hero-scroll span {
   font-family:'DM Mono',monospace;
@@ -1116,7 +1122,7 @@ footer {
     </p>
     <div class="hero-actions">
       <a href="#projects" class="btn-primary">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="5 12 12 5 19 12"/><polyline points="5 19 12 12 19 19"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="5 7 12 14 19 7"/><polyline points="5 13 12 20 19 13"/></svg>
         View Projects
       </a>
       <a href="resume.pdf" class="btn-secondary" data-resume-link download>Resume PDF</a>
@@ -1135,10 +1141,10 @@ footer {
       <div class="stat-item"><span class="stat-num">85%</span><span class="stat-label">Screening Time Saved</span></div>
       <div class="stat-item"><span class="stat-num">0.99</span><span class="stat-label">Best ROC-AUC (HR Model)</span></div>
     </div>
-  </div>
-  <div class="hero-scroll" aria-hidden="true">
-    <span>Scroll</span>
-    <div class="scroll-line"></div>
+    <div class="hero-scroll" aria-hidden="true">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
   </div>
 </section>
 <section id="about">
