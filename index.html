@@ -275,6 +275,119 @@ body.nav-open .nav-backdrop {
   opacity:0;
   animation: fadeUp .6s ease .5s forwards;
 }
+.hero-tagline-rotator {
+  display: block;
+  min-height: 1.35em;
+  perspective: 520px;
+}
+.hero-tagline-rotator.is-typewriter {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  min-height: 1.35em;
+  perspective: none;
+  vertical-align: top;
+}
+.hero-tagline-rotator__measure {
+  display: block;
+  visibility: hidden;
+  pointer-events: none;
+  user-select: none;
+  white-space: normal;
+  max-width: 100%;
+  font: inherit;
+  letter-spacing: inherit;
+}
+.hero-tagline-rotator.is-morph .hero-tagline-rotator__measure {
+  display: none;
+}
+.hero-tagline-rotator__live {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: nowrap;
+  gap: 0.12em;
+  max-width: 100%;
+  min-height: 1.35em;
+  box-sizing: border-box;
+}
+.hero-tagline-rotator.is-morph .hero-tagline-rotator__live {
+  position: static;
+  display: inline;
+  min-height: 0;
+}
+.hero-tagline-rotator__text {
+  display: inline-block;
+  transform-origin: 0 50%;
+  color: var(--txt2);
+  will-change: transform, opacity, filter;
+}
+.hero-tagline-rotator.is-typewriter .hero-tagline-rotator__text {
+  will-change: auto;
+  filter: none;
+  transform: none;
+  white-space: normal;
+  max-width: 100%;
+}
+.hero-tagline-cursor {
+  display: none;
+  width: 3px;
+  height: 0.72em;
+  align-self: center;
+  margin-bottom: 0.12em;
+  background: var(--accent);
+  box-shadow: 0 0 14px rgba(0, 229, 195, 0.55);
+  border-radius: 1px;
+  flex-shrink: 0;
+  animation: heroCursorBlink 1s step-end infinite;
+}
+.hero-tagline-rotator.is-typewriter .hero-tagline-cursor {
+  display: inline-block;
+}
+@keyframes heroCursorBlink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.hero-tagline-rotator.is-morph .hero-tagline-rotator__text.is-out {
+  animation: heroTaglineOut 0.44s cubic-bezier(0.45, 0, 0.55, 1) forwards;
+}
+.hero-tagline-rotator.is-morph .hero-tagline-rotator__text.is-in {
+  animation: heroTaglineIn 0.62s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes heroTaglineOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1) skewX(0);
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-0.55em) scale(0.9) skewX(-8deg);
+    filter: blur(8px);
+  }
+}
+@keyframes heroTaglineIn {
+  0% {
+    opacity: 0;
+    transform: translateY(0.65em) scale(1.08) skewX(6deg);
+    filter: blur(12px);
+    color: var(--accent);
+    text-shadow: 0 0 48px rgba(0, 229, 195, 0.55);
+  }
+  55% {
+    color: var(--accent);
+    text-shadow: 0 0 32px rgba(0, 229, 195, 0.35);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) skewX(0);
+    filter: blur(0);
+    color: var(--txt2);
+    text-shadow: 0 0 28px rgba(0, 229, 195, 0.12);
+  }
+}
 .hero-sub {
   max-width:580px;
   color:var(--txt2);
@@ -932,6 +1045,17 @@ footer {
     animation: none !important;
     opacity: 1 !important;
   }
+  .hero-tagline-rotator.is-morph .hero-tagline-rotator__text {
+    animation: none !important;
+    filter: none !important;
+    transform: none !important;
+    transition: opacity 0.2s ease;
+    text-shadow: none;
+  }
+  .hero-tagline-cursor {
+    animation: none !important;
+    opacity: 0.85;
+  }
   .hero-scroll { animation: none !important; opacity: 1 !important; }
   .scroll-line { animation: none !important; }
   .live-dot { animation: none !important; }
@@ -978,7 +1102,14 @@ footer {
   <div style="position:relative;z-index:2;max-width:1100px;">
     <p class="hero-eyebrow">Available for Data roles</p>
     <h1 class="hero-name">Aditya<br/><span class="accent">Bhaskar</span></h1>
-    <p class="hero-tagline">Data Scientist &amp; Analyst</p>
+    <p class="hero-tagline">
+      <span class="hero-tagline-rotator" id="heroTaglineRotatorWrap" aria-live="polite">
+        <span class="hero-tagline-rotator__measure" id="heroTaglineMeasure" aria-hidden="true">Math Enthusiast</span>
+        <span class="hero-tagline-rotator__live">
+          <span class="hero-tagline-rotator__text" id="heroTaglineRotate">Data Scientist</span><span class="hero-tagline-cursor" aria-hidden="true"></span>
+        </span>
+      </span>
+    </p>
     <p class="hero-sub">
       I build end-to-end data pipelines, predictive ML systems, and AI-powered tooling.
       From GCP BigQuery to spaCy + LLMs — I turn messy data into decisions.
@@ -1590,6 +1721,132 @@ footer {
       });
     });
   }
+
+  /**
+   * Hero tagline: 'typewriter' (char delete/type + cursor) or 'morph' (blur/slide swap).
+   * Change to compare; keep whichever you prefer.
+   */
+  var HERO_TAGLINE_MODE = 'typewriter';
+
+  (function initHeroTaglineRotator() {
+    var el = document.getElementById('heroTaglineRotate');
+    var wrap = document.getElementById('heroTaglineRotatorWrap');
+    if (!el || !wrap) return;
+
+    var roles = ['Data Scientist', 'Data Analyst', 'Math Enthusiast', 'Cinephile', 'Sports Nut', 'Shutterbug'];
+    var idx = 0;
+    var reduceMq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var mode = HERO_TAGLINE_MODE === 'morph' ? 'morph' : 'typewriter';
+    var twTimer = null;
+    var measure = document.getElementById('heroTaglineMeasure');
+
+    wrap.classList.add(mode === 'morph' ? 'is-morph' : 'is-typewriter');
+
+    if (measure && mode === 'typewriter') {
+      var longest = roles.reduce(function (a, b) {
+        return a.length >= b.length ? a : b;
+      });
+      measure.textContent = longest;
+    }
+
+    function clearTypewriterTimers() {
+      if (twTimer !== null) {
+        window.clearTimeout(twTimer);
+        twTimer = null;
+      }
+    }
+
+    function scheduleTw(fn, ms) {
+      clearTypewriterTimers();
+      twTimer = window.setTimeout(function () {
+        twTimer = null;
+        fn();
+      }, ms);
+    }
+
+    function cycleReduced() {
+      el.style.opacity = '0';
+      window.setTimeout(function () {
+        idx = (idx + 1) % roles.length;
+        el.textContent = roles[idx];
+        el.style.opacity = '1';
+      }, 200);
+    }
+
+    function cycleMorph() {
+      el.classList.add('is-out');
+      window.setTimeout(function () {
+        el.classList.remove('is-out');
+        idx = (idx + 1) % roles.length;
+        el.textContent = roles[idx];
+        el.classList.remove('is-in');
+        void el.offsetWidth;
+        el.classList.add('is-in');
+        window.setTimeout(function () {
+          el.classList.remove('is-in');
+        }, 650);
+      }, 440);
+    }
+
+    function morphTick() {
+      if (reduceMq.matches) cycleReduced();
+      else cycleMorph();
+    }
+
+    function runTypewriterReducedLoop() {
+      cycleReduced();
+      window.setInterval(cycleReduced, 3600);
+    }
+
+    function runTypewriterFull() {
+      var pauseRead = 2600;
+      var pauseTyped = 2400;
+      var delMs = 26;
+      var typeBase = 48;
+
+      function deleteOne() {
+        var t = el.textContent;
+        if (t.length > 0) {
+          el.textContent = t.slice(0, -1);
+          scheduleTw(deleteOne, delMs);
+        } else {
+          idx = (idx + 1) % roles.length;
+          scheduleTw(function () {
+            typeChars(roles[idx], 0);
+          }, 380);
+        }
+      }
+
+      function typeChars(str, pos) {
+        el.textContent = str.slice(0, pos);
+        if (pos < str.length) {
+          var jitter = Math.floor(Math.random() * 34);
+          scheduleTw(function () {
+            typeChars(str, pos + 1);
+          }, typeBase + jitter);
+        } else {
+          scheduleTw(deleteOne, pauseTyped);
+        }
+      }
+
+      scheduleTw(deleteOne, pauseRead);
+    }
+
+    if (reduceMq.matches) {
+      el.style.transition = 'opacity 0.22s ease';
+    }
+
+    window.setTimeout(function () {
+      if (mode === 'morph') {
+        window.setInterval(morphTick, 3000);
+        morphTick();
+      } else if (reduceMq.matches) {
+        runTypewriterReducedLoop();
+      } else {
+        runTypewriterFull();
+      }
+    }, 2600);
+  })();
 })();
 </script>
 </body>
