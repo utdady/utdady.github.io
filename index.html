@@ -802,6 +802,158 @@ section { padding:7rem 4rem; position:relative; z-index:2; }
   animation:livePulse 1.5s ease infinite;
 }
 
+#github-repos { background: var(--bg); }
+.gh-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.gh-filters { display: flex; gap: .5rem; flex-wrap: wrap; }
+.gh-filter {
+  font-family: 'DM Mono', monospace;
+  font-size: .72rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: .35rem .9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,.1);
+  background: transparent;
+  color: var(--txt2);
+  transition: all .2s;
+}
+.gh-filter:hover { border-color: var(--border); color: var(--accent); }
+.gh-filter.active { border-color: var(--accent); color: var(--accent); background: rgba(0,229,195,.07); }
+.gh-sort {
+  font-family: 'DM Mono', monospace;
+  font-size: .72rem;
+  letter-spacing: .08em;
+  padding: .35rem .9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,.1);
+  background: var(--surface);
+  color: var(--txt2);
+}
+.gh-sort:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.gh-loading {
+  font-family: 'DM Mono', monospace;
+  font-size: .82rem;
+  color: var(--txt3);
+  letter-spacing: .1em;
+  padding: 2.2rem 0;
+  text-align: center;
+}
+.gh-error {
+  font-family: 'DM Mono', monospace;
+  font-size: .82rem;
+  color: var(--accent2);
+  text-align: center;
+  padding: 1.2rem;
+  background: rgba(255,98,64,.06);
+  border: 1px solid rgba(255,98,64,.2);
+  border-radius: 10px;
+}
+.gh-error a { color: var(--accent); }
+.gh-repos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 1.2rem;
+}
+.gh-card {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 10px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: .7rem;
+  transition: all .25s;
+  text-decoration: none;
+  color: inherit;
+}
+.gh-card:hover {
+  border-color: var(--border);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,.4);
+}
+.gh-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.gh-card-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: .95rem;
+  color: var(--accent);
+  word-break: break-word;
+}
+.gh-card-desc {
+  font-size: .83rem;
+  color: var(--txt2);
+  line-height: 1.65;
+  flex: 1;
+}
+.gh-card-desc.no-desc { color: var(--txt3); font-style: italic; }
+.gh-topics { display: flex; flex-wrap: wrap; gap: .35rem; }
+.gh-topic {
+  font-family: 'DM Mono', monospace;
+  font-size: .64rem;
+  letter-spacing: .05em;
+  padding: .18rem .5rem;
+  border-radius: 20px;
+  background: rgba(0,229,195,.06);
+  color: var(--accent);
+  border: 1px solid rgba(0,229,195,.15);
+}
+.gh-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .5rem;
+  padding-top: .75rem;
+  border-top: 1px solid rgba(255,255,255,.04);
+}
+.gh-lang {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  font-family: 'DM Mono', monospace;
+  font-size: .7rem;
+  color: var(--txt2);
+}
+.gh-lang-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.gh-stats { display: flex; gap: .8rem; align-items: center; }
+.gh-stat {
+  font-family: 'DM Mono', monospace;
+  font-size: .7rem;
+  color: var(--txt3);
+}
+.gh-updated {
+  font-family: 'DM Mono', monospace;
+  font-size: .67rem;
+  color: var(--txt3);
+  width: 100%;
+}
+.gh-count-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: .72rem;
+  color: var(--txt3);
+  letter-spacing: .08em;
+}
+
 #skills { }
 .skills-grid {
   display:grid;
@@ -1042,6 +1194,7 @@ footer {
   .about-grid { grid-template-columns:1fr; gap:2.5rem; }
   footer { flex-direction:column; gap:.5rem; text-align:center; }
  .stat-item { max-width: none; }
+  .gh-controls { flex-direction: column; align-items: flex-start; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1093,6 +1246,7 @@ footer {
       <li><a href="#education" data-section="education">Education</a></li>
       <li><a href="#experience" data-section="experience">Experience</a></li>
       <li><a href="#projects" data-section="projects">Projects</a></li>
+      <li><a href="#github-repos" data-section="github-repos">GitHub</a></li>
       <li><a href="#skills" data-section="skills">Skills</a></li>
       <li><a href="#certifications" data-section="certifications">Certifications</a></li>
       <li><a href="#contact" data-section="contact">Contact</a></li>
@@ -1370,7 +1524,55 @@ footer {
       </div>
     </div>
 
+    <div class="project-card reveal">
+      <div class="project-number">05</div>
+      <div class="project-name">Replayd — Letterboxd for Sports</div>
+      <div class="project-desc">
+        Full-stack web app for logging, rating, and reviewing football matches across six top leagues. Built with Next.js 14 and PostgreSQL (raw pg queries, no ORM), Supabase Auth with SSR, and a GitHub Actions cron pipeline syncing live match data from football-data.org.
+      </div>
+      <div class="project-tags">
+        <span class="tag">Next.js 14</span>
+        <span class="tag">TypeScript</span>
+        <span class="tag">PostgreSQL</span>
+        <span class="tag">Supabase</span>
+        <span class="tag purple">Full-Stack</span>
+        <span class="tag purple">CI/CD</span>
+      </div>
+      <div class="project-links">
+        <a href="https://replayd-three.vercel.app/" target="_blank" rel="noopener noreferrer" class="project-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Live App
+        </a>
+        <a href="https://github.com/utdady/Replayd" target="_blank" rel="noopener noreferrer" class="project-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+          View on GitHub
+        </a>
+      </div>
+    </div>
+
   </div>
+</section>
+
+<section id="github-repos">
+  <div class="reveal">
+    <div class="section-label">All Repositories</div>
+    <h2 class="section-title">GitHub</h2>
+    <p class="section-sub">Fetched from the GitHub API. Use filter and sort to browse what I have been building recently.</p>
+  </div>
+  <div class="gh-controls reveal">
+    <div class="gh-filters" id="ghFilters" role="group" aria-label="Filter repositories by tech stack or language"></div>
+    <div style="display:flex;align-items:center;gap:.8rem;">
+      <span class="gh-count-badge" id="ghCount"></span>
+      <select class="gh-sort" id="ghSort" aria-label="Sort repositories">
+        <option value="updated">Recently updated</option>
+        <option value="stars">Most starred</option>
+        <option value="name">Name A-Z</option>
+        <option value="created">Newest first</option>
+      </select>
+    </div>
+  </div>
+  <div id="ghLoading" class="gh-loading" role="status" aria-live="polite">Fetching repos from GitHub</div>
+  <div id="ghGrid" class="gh-repos-grid" aria-label="GitHub repositories"></div>
 </section>
 
 <section id="skills">
@@ -1532,6 +1734,36 @@ footer {
 
   /** After Formspree "Create Form", copy the form endpoint (e.g. https://formspree.io/f/xyzabc) here. */
   var CONTACT_FORM_ENDPOINT = 'https://formspree.io/f/mzdyzldq';
+  var GITHUB_USERNAME = 'utdady';
+  /** Add repo names here to hide/toggle off from the GitHub section. */
+  var GITHUB_HIDDEN_REPOS = ['utdady', 'utdady.github.io'];
+  var GITHUB_CACHE_KEY = 'ab_portfolio_github_all_v1';
+  var GITHUB_CACHE_TTL_MS = 20 * 60 * 1000;
+  var GITHUB_API_URL = 'https://api.github.com/users/' + encodeURIComponent(GITHUB_USERNAME) + '/repos?sort=updated&per_page=100&type=public';
+  var LANG_COLORS = {
+    'Python': '#3572A5',
+    'JavaScript': '#f1e05a',
+    'TypeScript': '#2b7489',
+    'Jupyter Notebook': '#DA5B0B',
+    'HTML': '#e34c26',
+    'CSS': '#563d7c',
+    'SCSS': '#c6538c',
+    'Shell': '#89e051',
+    'Batchfile': '#C1F12E',
+    'default': '#8b949e'
+  };
+  var CORE_TECH_FILTERS = [
+    { id: 'python', label: 'Python', keywords: ['python', 'pandas', 'numpy', 'scikit', 'xgboost'] },
+    { id: 'sql', label: 'SQL', keywords: ['sql', 'postgres', 'postgresql', 'dbt', 'bigquery'] },
+    { id: 'ml', label: 'ML', keywords: ['ml', 'machine learning', 'model', 'xgboost', 'scikit'] },
+    { id: 'nlp', label: 'NLP', keywords: ['nlp', 'spacy', 'faiss', 'llm', 'ollama'] },
+    { id: 'dashboard', label: 'Dashboard', keywords: ['dashboard', 'tableau', 'power bi', 'streamlit'] },
+    { id: 'streamlit', label: 'Streamlit', keywords: ['streamlit'] },
+    { id: 'fullstack', label: 'Full-Stack', keywords: ['full-stack', 'full stack', 'next.js', 'supabase', 'api'] },
+    { id: 'nextjs', label: 'Next.js', keywords: ['next.js', 'nextjs'] },
+    { id: 'typescript', label: 'TypeScript', keywords: ['typescript'] },
+    { id: 'bi', label: 'BI', keywords: ['power bi', 'tableau', 'business intelligence'] }
+  ];
 
   document.querySelectorAll('a[data-resume-link]').forEach(function (el) {
     el.href = RESUME_URL;
@@ -1574,12 +1806,281 @@ footer {
     card.style.transitionDelay = motionOk() ? (i * 0.08) + 's' : '0s';
   });
 
+  var allRepos = [];
+  var activeFilter = 'all';
+
+  function clearNode(el) {
+    while (el.firstChild) el.removeChild(el.firstChild);
+  }
+
+  function languageColor(name) {
+    return LANG_COLORS[name] || LANG_COLORS.default;
+  }
+
+  function timeAgo(iso) {
+    var d = new Date(iso);
+    var diff = Math.floor((Date.now() - d.getTime()) / 1000);
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+    if (diff < 2592000) return Math.floor(diff / 86400) + 'd ago';
+    if (diff < 31536000) return Math.floor(diff / 2592000) + 'mo ago';
+    return Math.floor(diff / 31536000) + 'y ago';
+  }
+
+  function readGithubCache() {
+    try {
+      var raw = sessionStorage.getItem(GITHUB_CACHE_KEY);
+      if (!raw) return null;
+      var parsed = JSON.parse(raw);
+      if (!parsed || !Array.isArray(parsed.repos) || typeof parsed.t !== 'number') return null;
+      if ((Date.now() - parsed.t) > GITHUB_CACHE_TTL_MS) return null;
+      return parsed.repos;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function writeGithubCache(repos) {
+    try {
+      sessionStorage.setItem(GITHUB_CACHE_KEY, JSON.stringify({ t: Date.now(), repos: repos }));
+    } catch (_) {}
+  }
+
+  function createGhRepoCard(repo) {
+    var card = document.createElement('a');
+    card.className = 'gh-card reveal';
+    card.href = repo.html_url;
+    card.target = '_blank';
+    card.rel = 'noopener noreferrer';
+    card.setAttribute('aria-label', repo.name + ' repository');
+
+    var name = document.createElement('div');
+    name.className = 'gh-card-name';
+    name.textContent = repo.name;
+    card.appendChild(name);
+
+    var desc = document.createElement('p');
+    desc.className = 'gh-card-desc' + (repo.description ? '' : ' no-desc');
+    desc.textContent = repo.description || 'No description yet.';
+    card.appendChild(desc);
+
+    if (Array.isArray(repo.topics) && repo.topics.length) {
+      var topics = document.createElement('div');
+      topics.className = 'gh-topics';
+      repo.topics.slice(0, 6).forEach(function (topic) {
+        var chip = document.createElement('span');
+        chip.className = 'gh-topic';
+        chip.textContent = topic;
+        topics.appendChild(chip);
+      });
+      card.appendChild(topics);
+    }
+
+    var footer = document.createElement('div');
+    footer.className = 'gh-card-footer';
+
+    var lang = document.createElement('span');
+    lang.className = 'gh-lang';
+    var dot = document.createElement('span');
+    dot.className = 'gh-lang-dot';
+    dot.style.backgroundColor = languageColor(repo.language || 'default');
+    var langLabel = document.createElement('span');
+    langLabel.textContent = repo.language || 'Unknown';
+    lang.appendChild(dot);
+    lang.appendChild(langLabel);
+    footer.appendChild(lang);
+
+    var stats = document.createElement('div');
+    stats.className = 'gh-stats';
+    var stars = document.createElement('span');
+    stars.className = 'gh-stat';
+    stars.textContent = '\u2605 ' + String(repo.stargazers_count || 0);
+    stats.appendChild(stars);
+    var forks = document.createElement('span');
+    forks.className = 'gh-stat';
+    forks.textContent = '\u2442 ' + String(repo.forks_count || 0);
+    stats.appendChild(forks);
+    footer.appendChild(stats);
+
+    var updated = document.createElement('span');
+    updated.className = 'gh-updated';
+    updated.textContent = 'Updated ' + timeAgo(repo.updated_at);
+    footer.appendChild(updated);
+
+    card.appendChild(footer);
+    return card;
+  }
+
+  function sortRepos(repos, sortBy) {
+    var arr = repos.slice();
+    if (sortBy === 'stars') return arr.sort(function (a, b) { return b.stargazers_count - a.stargazers_count; });
+    if (sortBy === 'name') return arr.sort(function (a, b) { return a.name.localeCompare(b.name); });
+    if (sortBy === 'created') return arr.sort(function (a, b) { return new Date(b.created_at) - new Date(a.created_at); });
+    return arr.sort(function (a, b) { return new Date(b.updated_at) - new Date(a.updated_at); });
+  }
+
+  function repoSearchBlob(repo) {
+    var topics = Array.isArray(repo.topics) ? repo.topics.join(' ') : '';
+    return [
+      repo.name || '',
+      repo.description || '',
+      repo.language || '',
+      topics
+    ].join(' ').toLowerCase();
+  }
+
+  function matchTechFilter(repo, techId) {
+    var tech = null;
+    for (var i = 0; i < CORE_TECH_FILTERS.length; i++) {
+      if (CORE_TECH_FILTERS[i].id === techId) {
+        tech = CORE_TECH_FILTERS[i];
+        break;
+      }
+    }
+    if (!tech) return false;
+    var blob = repoSearchBlob(repo);
+    return tech.keywords.some(function (kw) { return blob.indexOf(kw) !== -1; });
+  }
+
+  function renderGhGrid() {
+    var grid = document.getElementById('ghGrid');
+    var count = document.getElementById('ghCount');
+    var sortEl = document.getElementById('ghSort');
+    if (!grid || !sortEl) return;
+    clearNode(grid);
+
+    var filtered = allRepos;
+    if (activeFilter.indexOf('lang:') === 0) {
+      var langName = activeFilter.slice(5);
+      filtered = allRepos.filter(function (r) { return r.language === langName; });
+    } else if (activeFilter.indexOf('tech:') === 0) {
+      var techId = activeFilter.slice(5);
+      filtered = allRepos.filter(function (r) { return matchTechFilter(r, techId); });
+    }
+    filtered = sortRepos(filtered, sortEl.value);
+
+    if (count) count.textContent = filtered.length + ' repo' + (filtered.length === 1 ? '' : 's');
+
+    filtered.forEach(function (repo, i) {
+      var card = createGhRepoCard(repo);
+      card.style.transitionDelay = motionOk() ? (i * 0.05) + 's' : '0s';
+      grid.appendChild(card);
+      revealObserver.observe(card);
+    });
+  }
+
+  function buildGhFilters() {
+    var wrap = document.getElementById('ghFilters');
+    if (!wrap) return;
+    clearNode(wrap);
+
+    var counts = {};
+    allRepos.forEach(function (r) {
+      if (r.language) counts[r.language] = (counts[r.language] || 0) + 1;
+    });
+    var langs = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; });
+
+    function addButton(id, label, withDot) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'gh-filter' + (id === activeFilter ? ' active' : '');
+      btn.setAttribute('data-filter', id);
+      if (withDot) {
+        var dot = document.createElement('span');
+        dot.className = 'gh-lang-dot';
+        dot.style.width = '8px';
+        dot.style.height = '8px';
+        dot.style.backgroundColor = languageColor(id);
+        dot.style.marginRight = '0.4rem';
+        btn.appendChild(dot);
+      }
+      btn.appendChild(document.createTextNode(label));
+      btn.addEventListener('click', function () {
+        activeFilter = id;
+        Array.prototype.forEach.call(wrap.querySelectorAll('.gh-filter'), function (b) {
+          b.classList.remove('active');
+        });
+        btn.classList.add('active');
+        renderGhGrid();
+      });
+      wrap.appendChild(btn);
+    }
+
+    addButton('all', 'All', false);
+    CORE_TECH_FILTERS.forEach(function (tech) {
+      addButton('tech:' + tech.id, tech.label, false);
+    });
+    langs.forEach(function (lang) { addButton('lang:' + lang, lang, true); });
+  }
+
+  function showGhError(kind) {
+    var grid = document.getElementById('ghGrid');
+    if (!grid) return;
+    clearNode(grid);
+    var box = document.createElement('div');
+    box.className = 'gh-error';
+    var text = document.createElement('span');
+    text.textContent = kind === 'rate_limit'
+      ? 'GitHub API rate limit reached for now. '
+      : 'Could not load repositories right now. ';
+    box.appendChild(text);
+    var link = document.createElement('a');
+    link.href = 'https://github.com/' + GITHUB_USERNAME + '?tab=repositories';
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = 'View all repos on GitHub';
+    box.appendChild(link);
+    grid.appendChild(box);
+  }
+
+  function loadGitHubRepos() {
+    var loading = document.getElementById('ghLoading');
+    var sortEl = document.getElementById('ghSort');
+    if (!loading || !sortEl) return;
+
+    sortEl.addEventListener('change', renderGhGrid);
+    var cached = readGithubCache();
+    if (cached) {
+      allRepos = cached;
+      loading.style.display = 'none';
+      buildGhFilters();
+      renderGhGrid();
+      return;
+    }
+
+    fetch(GITHUB_API_URL, { headers: { 'Accept': 'application/vnd.github+json' } })
+      .then(function (res) {
+        if (res.status === 403 || res.status === 429) throw new Error('rate_limit');
+        if (!res.ok) throw new Error('api_error');
+        return res.json();
+      })
+      .then(function (repos) {
+        if (!Array.isArray(repos)) throw new Error('api_error');
+        var hidden = {};
+        GITHUB_HIDDEN_REPOS.forEach(function (name) { hidden[name] = true; });
+        allRepos = repos.filter(function (repo) {
+          return repo && !repo.fork && repo.name && !hidden[repo.name];
+        });
+        writeGithubCache(allRepos);
+        loading.style.display = 'none';
+        buildGhFilters();
+        renderGhGrid();
+      })
+      .catch(function (err) {
+        loading.style.display = 'none';
+        showGhError(err.message);
+      });
+  }
+
+  loadGitHubRepos();
+
   window.addEventListener('scroll', function () {
     nav.style.boxShadow = window.scrollY > 20 ? '0 8px 32px rgba(0,0,0,0.4)' : 'none';
   });
 
   var navLinkEls = Array.prototype.slice.call(document.querySelectorAll('.nav-links a[href^="#"]'));
-  var sectionIds = ['hero', 'about', 'education', 'experience', 'projects', 'skills', 'certifications', 'contact'];
+  var sectionIds = ['hero', 'about', 'education', 'experience', 'projects', 'github-repos', 'skills', 'certifications', 'contact'];
   var sections = sectionIds.map(function (id) {
     return document.getElementById(id);
   }).filter(Boolean);
