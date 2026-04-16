@@ -861,27 +861,164 @@ section { padding:7rem 4rem; position:relative; z-index:2; }
   border-radius: 10px;
 }
 .gh-error a { color: var(--accent); }
-.gh-repos-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
-  gap: 1.2rem;
-}
-.gh-card {
-  background: var(--surface);
-  border: 1px solid rgba(255,255,255,.06);
-  border-radius: 10px;
-  padding: 1.5rem;
+.gh-carousel {
+  /* One rhythm: gutter between cards = gutter at viewport left/right/bottom */
+  --gh-gutter: 1rem;
+  --gh-viewport-pad-top: 0;
   display: flex;
   flex-direction: column;
-  gap: .7rem;
-  transition: all .25s;
+  margin-top: 0.35rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: linear-gradient(165deg, rgba(255,255,255,.04) 0%, rgba(0,0,0,.2) 100%);
+  box-shadow: 0 24px 48px rgba(0,0,0,.35);
+  overflow: hidden;
+}
+.gh-carousel-viewport {
+  width: 100%;
+  min-width: 0;
+  padding: var(--gh-viewport-pad-top) var(--gh-gutter) var(--gh-gutter);
+  box-sizing: border-box;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+.gh-carousel-viewport::-webkit-scrollbar { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .gh-carousel-viewport { scroll-behavior: auto; }
+}
+.gh-carousel-track {
+  display: flex;
+  flex-direction: row;
+  gap: var(--gh-gutter);
+}
+.gh-carousel-slide {
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  box-sizing: border-box;
+}
+.gh-slide-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--gh-gutter);
+  align-items: stretch;
+}
+@media (max-width: 900px) {
+  .gh-slide-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .gh-card {
+    min-height: 19.5rem;
+    max-height: 19.5rem;
+    height: 19.5rem;
+  }
+  .gh-card-desc { -webkit-line-clamp: 4; }
+}
+.gh-carousel-chrome {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  padding: 0.95rem var(--gh-gutter);
+  box-sizing: border-box;
+  border-top: 1px solid rgba(255,255,255,.07);
+  background: rgba(0,0,0,.45);
+}
+@media (max-width: 480px) {
+  .gh-carousel { --gh-gutter: 0.85rem; }
+  .gh-carousel-chrome { padding: 0.85rem var(--gh-gutter); gap: 0.5rem; }
+  .gh-carousel-arrow { width: 2.35rem; height: 2.35rem; border-radius: 8px; }
+}
+.gh-carousel-arrow {
+  flex-shrink: 0;
+  width: 2.65rem;
+  height: 2.65rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.1);
+  background: rgba(255,255,255,.04);
+  color: rgba(255,255,255,.75);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color .2s, color .2s, background .2s, box-shadow .2s;
+}
+.gh-carousel-arrow:hover:not(:disabled) {
+  border-color: rgba(255,255,255,.22);
+  color: #fff;
+  background: rgba(255,255,255,.08);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.06);
+}
+.gh-carousel-arrow:disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
+}
+.gh-carousel-arrow:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.gh-carousel-arrow svg { width: 20px; height: 20px; }
+.gh-carousel-dots {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 1.25rem;
+  min-width: 0;
+  justify-self: center;
+  max-width: 100%;
+}
+.gh-carousel-dots[hidden] { display: none !important; }
+.gh-dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255,255,255,.22);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: width .28s cubic-bezier(.4, 0, .2, 1), height .28s cubic-bezier(.4, 0, .2, 1),
+    background .2s, opacity .2s, box-shadow .2s;
+}
+.gh-dot:hover:not(.active) {
+  background: rgba(255,255,255,.38);
+}
+.gh-dot.active {
+  width: 1.75rem;
+  height: 6px;
+  background: rgba(255,255,255,.92);
+  box-shadow: 0 0 12px rgba(255,255,255,.12);
+}
+.gh-dot:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.gh-card {
+  background: rgba(28, 28, 32, 0.92);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px;
+  padding: 1.35rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: .65rem;
+  min-height: 22.5rem;
+  max-height: 22.5rem;
+  height: 22.5rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: border-color .22s, transform .22s, box-shadow .22s;
   text-decoration: none;
   color: inherit;
 }
 .gh-card:hover {
-  border-color: var(--border);
-  transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(0,0,0,.4);
+  border-color: rgba(255,255,255,.14);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(0,0,0,.45);
 }
 .gh-card:focus-visible {
   outline: 2px solid var(--accent);
@@ -890,27 +1027,41 @@ section { padding:7rem 4rem; position:relative; z-index:2; }
 .gh-card-name {
   font-family: 'Syne', sans-serif;
   font-weight: 700;
-  font-size: .95rem;
-  color: var(--accent);
+  font-size: 0.98rem;
+  color: rgba(255,255,255,.94);
+  letter-spacing: -0.01em;
   word-break: break-word;
 }
 .gh-card-desc {
   font-size: .83rem;
   color: var(--txt2);
-  line-height: 1.65;
-  flex: 1;
+  line-height: 1.55;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
 }
 .gh-card-desc.no-desc { color: var(--txt3); font-style: italic; }
-.gh-topics { display: flex; flex-wrap: wrap; gap: .35rem; }
+.gh-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  flex-shrink: 0;
+  max-height: 4.5rem;
+  overflow: hidden;
+}
 .gh-topic {
   font-family: 'DM Mono', monospace;
-  font-size: .64rem;
-  letter-spacing: .05em;
-  padding: .18rem .5rem;
-  border-radius: 20px;
-  background: rgba(0,229,195,.06);
-  color: var(--accent);
-  border: 1px solid rgba(0,229,195,.15);
+  font-size: .62rem;
+  letter-spacing: .04em;
+  padding: .2rem .52rem;
+  border-radius: 999px;
+  background: rgba(88, 140, 255, 0.1);
+  color: rgba(200, 218, 255, 0.92);
+  border: 1px solid rgba(120, 160, 255, 0.22);
 }
 .gh-card-footer {
   display: flex;
@@ -919,7 +1070,9 @@ section { padding:7rem 4rem; position:relative; z-index:2; }
   flex-wrap: wrap;
   gap: .5rem;
   padding-top: .75rem;
+  margin-top: auto;
   border-top: 1px solid rgba(255,255,255,.04);
+  flex-shrink: 0;
 }
 .gh-lang {
   display: inline-flex;
@@ -1572,7 +1725,21 @@ footer {
     </div>
   </div>
   <div id="ghLoading" class="gh-loading" role="status" aria-live="polite">Fetching repos from GitHub</div>
-  <div id="ghGrid" class="gh-repos-grid" aria-label="GitHub repositories"></div>
+  <div id="ghRepoError" class="gh-error" style="display: none;" role="alert" aria-live="assertive"></div>
+  <div id="ghCarouselShell" class="gh-carousel" hidden>
+    <div class="gh-carousel-viewport" id="ghViewport" tabindex="0" role="region" aria-roledescription="carousel" aria-label="GitHub repositories">
+      <div id="ghGrid" class="gh-carousel-track" aria-live="polite"></div>
+    </div>
+    <div class="gh-carousel-chrome" id="ghCarouselChrome">
+      <button type="button" class="gh-carousel-arrow gh-carousel-prev" id="ghPrev" aria-controls="ghViewport" aria-label="Previous repositories">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div id="ghDots" class="gh-carousel-dots" role="tablist" aria-label="Repository pages" hidden></div>
+      <button type="button" class="gh-carousel-arrow gh-carousel-next" id="ghNext" aria-controls="ghViewport" aria-label="Next repositories">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+  </div>
 </section>
 
 <section id="skills">
@@ -1737,8 +1904,10 @@ footer {
   var GITHUB_USERNAME = 'utdady';
   /** Add repo names here to hide/toggle off from the GitHub section. */
   var GITHUB_HIDDEN_REPOS = ['utdady', 'utdady.github.io'];
-  var GITHUB_CACHE_KEY = 'ab_portfolio_github_all_v1';
+  var GITHUB_CACHE_KEY = 'ab_portfolio_github_all_v3';
   var GITHUB_CACHE_TTL_MS = 20 * 60 * 1000;
+  var README_SNIP_CACHE_KEY = 'ab_portfolio_github_readme_snips_v1';
+  var README_SNIP_TTL_MS = 7 * 24 * 60 * 60 * 1000;
   var GITHUB_API_URL = 'https://api.github.com/users/' + encodeURIComponent(GITHUB_USERNAME) + '/repos?sort=updated&per_page=100&type=public';
   var LANG_COLORS = {
     'Python': '#3572A5',
@@ -1750,6 +1919,9 @@ footer {
     'SCSS': '#c6538c',
     'Shell': '#89e051',
     'Batchfile': '#C1F12E',
+    'C': '#555555',
+    'C++': '#f34b7d',
+    'Assembly': '#6E4C13',
     'default': '#8b949e'
   };
   var CORE_TECH_FILTERS = [
@@ -1808,6 +1980,9 @@ footer {
 
   var allRepos = [];
   var activeFilter = 'all';
+  var GH_PAGE_SIZE = 4;
+  var ghCarouselBound = false;
+  var ghResizeTimer = null;
 
   function clearNode(el) {
     while (el.firstChild) el.removeChild(el.firstChild);
@@ -1847,6 +2022,144 @@ footer {
     } catch (_) {}
   }
 
+  function trimDesc(s) {
+    return (s && String(s).trim()) || '';
+  }
+
+  function readReadmeSnippetMapValid() {
+    try {
+      var raw = sessionStorage.getItem(README_SNIP_CACHE_KEY);
+      if (!raw) return null;
+      var p = JSON.parse(raw);
+      if (!p || typeof p.t !== 'number' || typeof p.map !== 'object' || p.map === null) return null;
+      if ((Date.now() - p.t) > README_SNIP_TTL_MS) return null;
+      return p.map;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function writeReadmeSnippetMap(map) {
+    try {
+      sessionStorage.setItem(README_SNIP_CACHE_KEY, JSON.stringify({ t: Date.now(), map: map }));
+    } catch (_) {}
+  }
+
+  function mergeReadmeSnippetCacheIntoRepos(repos) {
+    var m = readReadmeSnippetMapValid();
+    if (!m) return;
+    repos.forEach(function (r) {
+      if (!trimDesc(r.description) && typeof m[r.name] === 'string' && trimDesc(m[r.name])) {
+        r.readme_summary = m[r.name];
+      }
+    });
+  }
+
+  function reposNeedingReadmeFetch(repos) {
+    return repos.filter(function (r) {
+      return !trimDesc(r.description) && !trimDesc(r.readme_summary);
+    });
+  }
+
+  function excerptFromMarkdown(md) {
+    if (!md || typeof md !== 'string') return '';
+    var t = md
+      .replace(/```[\s\S]*?```/g, ' ')
+      .replace(/`[^`\n]+`/g, ' ')
+      .replace(/!\[[^\]]*]\([^)]+\)/g, ' ')
+      .replace(/\[[^\]]*]\([^)]+\)/g, function (m) {
+        var end = m.indexOf('](');
+        return end > 1 ? m.slice(1, end) : '';
+      })
+      .replace(/^#{1,6}\s+/gm, '')
+      .replace(/^\s*[-*+]\s+/gm, '')
+      .replace(/[*_]{1,3}([^*_]+)[*_]{1,3}/g, '$1')
+      .replace(/\r\n/g, '\n')
+      .replace(/\n+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (t.length > 280) t = t.slice(0, 277).trim() + '\u2026';
+    return t;
+  }
+
+  function decodeGithubReadmeB64(b64) {
+    if (!b64 || typeof b64 !== 'string') return '';
+    try {
+      var clean = b64.replace(/\s/g, '');
+      var bin = atob(clean);
+      var bytes = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return new TextDecoder('utf-8').decode(bytes);
+    } catch (_) {
+      try {
+        return decodeURIComponent(escape(atob(b64.replace(/\s/g, ''))));
+      } catch (_2) {
+        return '';
+      }
+    }
+  }
+
+  function fetchReadmeExcerpt(fullName) {
+    var url = 'https://api.github.com/repos/' + fullName + '/readme';
+    return fetch(url, { headers: { 'Accept': 'application/vnd.github+json' } })
+      .then(function (res) {
+        if (res.status === 404) return '';
+        if (res.status === 403 || res.status === 429) throw new Error('rate_limit');
+        if (!res.ok) return '';
+        return res.json();
+      })
+      .then(function (data) {
+        if (!data || !data.content || data.encoding !== 'base64') return '';
+        return excerptFromMarkdown(decodeGithubReadmeB64(data.content));
+      });
+  }
+
+  function enrichReposWithReadmeSummaries(repos, loadingEl, onDone) {
+    var need = reposNeedingReadmeFetch(repos);
+    if (!need.length) {
+      onDone();
+      return;
+    }
+    var acc = readReadmeSnippetMapValid() || {};
+    var i = 0;
+    function step() {
+      if (i >= need.length) {
+        writeReadmeSnippetMap(acc);
+        onDone();
+        return;
+      }
+      var r = need[i];
+      i++;
+      fetchReadmeExcerpt(GITHUB_USERNAME + '/' + encodeURIComponent(r.name))
+        .then(function (text) {
+          if (text) {
+            r.readme_summary = text;
+            acc[r.name] = text;
+          }
+        })
+        .catch(function () {})
+        .then(function () {
+          setTimeout(step, 130);
+        });
+    }
+    if (loadingEl) loadingEl.textContent = 'Loading README summaries\u2026';
+    step();
+  }
+
+  function finishGithubSectionUi(loadingEl) {
+    if (loadingEl) loadingEl.style.display = 'none';
+    buildGhFilters();
+    renderGhGrid();
+  }
+
+  function repoCardSummary(repo) {
+    var d = trimDesc(repo.description);
+    if (d) return { text: d, isPlaceholder: false };
+    var rs = trimDesc(repo.readme_summary);
+    if (rs) return { text: rs, isPlaceholder: false };
+    return { text: 'No description yet.', isPlaceholder: true };
+  }
+
   function createGhRepoCard(repo) {
     var card = document.createElement('a');
     card.className = 'gh-card reveal';
@@ -1860,15 +2173,16 @@ footer {
     name.textContent = repo.name;
     card.appendChild(name);
 
+    var sum = repoCardSummary(repo);
     var desc = document.createElement('p');
-    desc.className = 'gh-card-desc' + (repo.description ? '' : ' no-desc');
-    desc.textContent = repo.description || 'No description yet.';
+    desc.className = 'gh-card-desc' + (sum.isPlaceholder ? ' no-desc' : '');
+    desc.textContent = sum.text;
     card.appendChild(desc);
 
     if (Array.isArray(repo.topics) && repo.topics.length) {
       var topics = document.createElement('div');
       topics.className = 'gh-topics';
-      repo.topics.slice(0, 6).forEach(function (topic) {
+      repo.topics.slice(0, 4).forEach(function (topic) {
         var chip = document.createElement('span');
         chip.className = 'gh-topic';
         chip.textContent = topic;
@@ -1925,6 +2239,7 @@ footer {
     return [
       repo.name || '',
       repo.description || '',
+      repo.readme_summary || '',
       repo.language || '',
       topics
     ].join(' ').toLowerCase();
@@ -1943,12 +2258,184 @@ footer {
     return tech.keywords.some(function (kw) { return blob.indexOf(kw) !== -1; });
   }
 
+  function hideGhRepoError() {
+    var err = document.getElementById('ghRepoError');
+    if (!err) return;
+    err.style.display = 'none';
+    clearNode(err);
+  }
+
+  function getGhViewportContentWidth(vp) {
+    if (!vp) return 0;
+    var s = window.getComputedStyle(vp);
+    var pl = parseFloat(s.paddingLeft) || 0;
+    var pr = parseFloat(s.paddingRight) || 0;
+    var w = vp.clientWidth - pl - pr;
+    return w > 0 ? w : vp.clientWidth;
+  }
+
+  function syncGhCarouselLayout() {
+    var vp = document.getElementById('ghViewport');
+    if (!vp) return;
+    var slides = vp.querySelectorAll('.gh-carousel-slide');
+    if (!slides.length) return;
+    var w = getGhViewportContentWidth(vp);
+    if (w <= 0) return;
+    for (var i = 0; i < slides.length; i++) {
+      slides[i].style.width = w + 'px';
+      slides[i].style.flexBasis = w + 'px';
+    }
+  }
+
+  function getGhPageStep(vp) {
+    if (!vp) return 0;
+    var slides = vp.querySelectorAll('.gh-carousel-slide');
+    if (slides.length >= 2) {
+      var step = slides[1].offsetLeft - slides[0].offsetLeft;
+      if (step > 0) return step;
+    }
+    return getGhViewportContentWidth(vp);
+  }
+
+  function getGhCurrentPage() {
+    var vp = document.getElementById('ghViewport');
+    if (!vp) return 0;
+    var slides = vp.querySelectorAll('.gh-carousel-slide');
+    if (!slides.length) return 0;
+    var step = getGhPageStep(vp);
+    if (step <= 0) return 0;
+    var idx = Math.round(vp.scrollLeft / step);
+    if (idx < 0) idx = 0;
+    if (idx >= slides.length) idx = slides.length - 1;
+    return idx;
+  }
+
+  function ghScrollToPage(page, instant) {
+    var vp = document.getElementById('ghViewport');
+    if (!vp) return;
+    var slides = vp.querySelectorAll('.gh-carousel-slide');
+    if (!slides.length) return;
+    var idx = page;
+    if (idx < 0) idx = 0;
+    if (idx >= slides.length) idx = slides.length - 1;
+    var left = slides[idx].offsetLeft;
+    var behavior = instant || !motionOk() ? 'auto' : 'smooth';
+    vp.scrollTo({ left: left, top: 0, behavior: behavior });
+  }
+
+  function updateGhCarouselChrome() {
+    var vp = document.getElementById('ghViewport');
+    var prev = document.getElementById('ghPrev');
+    var next = document.getElementById('ghNext');
+    var dots = document.getElementById('ghDots');
+    if (!vp || !prev || !next) return;
+    var slides = vp.querySelectorAll('.gh-carousel-slide');
+    var n = slides.length;
+    var page = getGhCurrentPage();
+    prev.disabled = page <= 0;
+    next.disabled = page >= n - 1;
+    if (dots) {
+      Array.prototype.forEach.call(dots.querySelectorAll('.gh-dot'), function (btn, i) {
+        if (i === page) {
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+          btn.setAttribute('tabindex', '0');
+        } else {
+          btn.classList.remove('active');
+          btn.setAttribute('aria-selected', 'false');
+          btn.setAttribute('tabindex', '-1');
+        }
+      });
+    }
+  }
+
+  function rebuildGhDots(slideCount) {
+    var dots = document.getElementById('ghDots');
+    var chrome = document.getElementById('ghCarouselChrome');
+    if (!dots) return;
+    clearNode(dots);
+    if (slideCount <= 1) {
+      dots.setAttribute('hidden', '');
+      if (chrome) chrome.style.display = 'none';
+      return;
+    }
+    if (chrome) chrome.style.display = '';
+    dots.removeAttribute('hidden');
+    for (var i = 0; i < slideCount; i++) {
+      (function (pageIndex) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'gh-dot' + (pageIndex === 0 ? ' active' : '');
+        btn.setAttribute('role', 'tab');
+        btn.setAttribute('aria-label', 'Page ' + (pageIndex + 1) + ' of ' + slideCount);
+        btn.setAttribute('aria-selected', pageIndex === 0 ? 'true' : 'false');
+        btn.setAttribute('tabindex', pageIndex === 0 ? '0' : '-1');
+        btn.addEventListener('click', function () {
+          ghScrollToPage(pageIndex, false);
+          var vp = document.getElementById('ghViewport');
+          if (vp) vp.focus();
+        });
+        dots.appendChild(btn);
+      })(i);
+    }
+  }
+
+  function bindGhCarouselOnce() {
+    if (ghCarouselBound) return;
+    ghCarouselBound = true;
+    var vp = document.getElementById('ghViewport');
+    var prev = document.getElementById('ghPrev');
+    var next = document.getElementById('ghNext');
+    if (!vp || !prev || !next) return;
+
+    prev.addEventListener('click', function () {
+      ghScrollToPage(getGhCurrentPage() - 1, false);
+    });
+    next.addEventListener('click', function () {
+      ghScrollToPage(getGhCurrentPage() + 1, false);
+    });
+
+    vp.addEventListener('scroll', function () {
+      updateGhCarouselChrome();
+    }, { passive: true });
+
+    vp.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        ghScrollToPage(getGhCurrentPage() - 1, false);
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        ghScrollToPage(getGhCurrentPage() + 1, false);
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        ghScrollToPage(0, false);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        var slides = vp.querySelectorAll('.gh-carousel-slide');
+        ghScrollToPage(slides.length - 1, false);
+      }
+    });
+
+    window.addEventListener('resize', function () {
+      if (ghResizeTimer) clearTimeout(ghResizeTimer);
+      ghResizeTimer = setTimeout(function () {
+        var cur = getGhCurrentPage();
+        syncGhCarouselLayout();
+        ghScrollToPage(cur, true);
+        updateGhCarouselChrome();
+      }, 120);
+    });
+  }
+
   function renderGhGrid() {
-    var grid = document.getElementById('ghGrid');
+    var track = document.getElementById('ghGrid');
     var count = document.getElementById('ghCount');
     var sortEl = document.getElementById('ghSort');
-    if (!grid || !sortEl) return;
-    clearNode(grid);
+    var shell = document.getElementById('ghCarouselShell');
+    var dots = document.getElementById('ghDots');
+    if (!track || !sortEl) return;
+    hideGhRepoError();
+    clearNode(track);
 
     var filtered = allRepos;
     if (activeFilter.indexOf('lang:') === 0) {
@@ -1962,11 +2449,57 @@ footer {
 
     if (count) count.textContent = filtered.length + ' repo' + (filtered.length === 1 ? '' : 's');
 
-    filtered.forEach(function (repo, i) {
-      var card = createGhRepoCard(repo);
-      card.style.transitionDelay = motionOk() ? (i * 0.05) + 's' : '0s';
-      grid.appendChild(card);
-      revealObserver.observe(card);
+    if (!filtered.length) {
+      var empty = document.createElement('p');
+      empty.className = 'gh-loading';
+      empty.style.marginTop = '0';
+      empty.textContent = 'No repositories match this filter.';
+      track.appendChild(empty);
+      if (shell) shell.setAttribute('hidden', '');
+      if (dots) {
+        clearNode(dots);
+        dots.setAttribute('hidden', '');
+      }
+      return;
+    }
+
+    if (shell) shell.removeAttribute('hidden');
+
+    var localIndex = 0;
+    for (var start = 0; start < filtered.length; start += GH_PAGE_SIZE) {
+      var slide = document.createElement('div');
+      slide.className = 'gh-carousel-slide';
+      slide.setAttribute('role', 'group');
+      slide.setAttribute('aria-roledescription', 'slide');
+      slide.setAttribute(
+        'aria-label',
+        'Repositories ' + (start + 1) + ' to ' + Math.min(start + GH_PAGE_SIZE, filtered.length)
+      );
+
+      var inner = document.createElement('div');
+      inner.className = 'gh-slide-grid';
+
+      for (var j = start; j < Math.min(start + GH_PAGE_SIZE, filtered.length); j++) {
+        var card = createGhRepoCard(filtered[j]);
+        card.style.transitionDelay = motionOk() ? (localIndex * 0.05) + 's' : '0s';
+        localIndex++;
+        inner.appendChild(card);
+        revealObserver.observe(card);
+      }
+
+      slide.appendChild(inner);
+      track.appendChild(slide);
+    }
+
+    var slideCount = track.querySelectorAll('.gh-carousel-slide').length;
+    rebuildGhDots(slideCount);
+    bindGhCarouselOnce();
+
+    requestAnimationFrame(function () {
+      syncGhCarouselLayout();
+      var vp = document.getElementById('ghViewport');
+      if (vp) vp.scrollLeft = 0;
+      updateGhCarouselChrome();
     });
   }
 
@@ -2015,23 +2548,30 @@ footer {
   }
 
   function showGhError(kind) {
-    var grid = document.getElementById('ghGrid');
-    if (!grid) return;
-    clearNode(grid);
-    var box = document.createElement('div');
-    box.className = 'gh-error';
+    var track = document.getElementById('ghGrid');
+    var shell = document.getElementById('ghCarouselShell');
+    var dots = document.getElementById('ghDots');
+    var err = document.getElementById('ghRepoError');
+    if (shell) shell.setAttribute('hidden', '');
+    if (dots) {
+      clearNode(dots);
+      dots.setAttribute('hidden', '');
+    }
+    if (track) clearNode(track);
+    if (!err) return;
+    clearNode(err);
+    err.style.display = '';
     var text = document.createElement('span');
     text.textContent = kind === 'rate_limit'
       ? 'GitHub API rate limit reached for now. '
       : 'Could not load repositories right now. ';
-    box.appendChild(text);
+    err.appendChild(text);
     var link = document.createElement('a');
     link.href = 'https://github.com/' + GITHUB_USERNAME + '?tab=repositories';
     link.target = '_blank';
     link.rel = 'noopener noreferrer';
     link.textContent = 'View all repos on GitHub';
-    box.appendChild(link);
-    grid.appendChild(box);
+    err.appendChild(link);
   }
 
   function loadGitHubRepos() {
@@ -2043,9 +2583,11 @@ footer {
     var cached = readGithubCache();
     if (cached) {
       allRepos = cached;
-      loading.style.display = 'none';
-      buildGhFilters();
-      renderGhGrid();
+      mergeReadmeSnippetCacheIntoRepos(allRepos);
+      enrichReposWithReadmeSummaries(allRepos, loading, function () {
+        writeGithubCache(allRepos);
+        finishGithubSectionUi(loading);
+      });
       return;
     }
 
@@ -2062,10 +2604,11 @@ footer {
         allRepos = repos.filter(function (repo) {
           return repo && !repo.fork && repo.name && !hidden[repo.name];
         });
-        writeGithubCache(allRepos);
-        loading.style.display = 'none';
-        buildGhFilters();
-        renderGhGrid();
+        mergeReadmeSnippetCacheIntoRepos(allRepos);
+        enrichReposWithReadmeSummaries(allRepos, loading, function () {
+          writeGithubCache(allRepos);
+          finishGithubSectionUi(loading);
+        });
       })
       .catch(function (err) {
         loading.style.display = 'none';
