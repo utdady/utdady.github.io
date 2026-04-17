@@ -921,25 +921,26 @@ section { padding:7rem 4rem; position:relative; z-index:2; }
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 0.75rem 1rem;
-  padding: 0.95rem var(--gh-gutter);
+  gap: 0.5rem 0.75rem;
+  padding: 0.42rem var(--gh-gutter);
   box-sizing: border-box;
-  border-top: 1px solid rgba(255,255,255,.07);
-  background: rgba(0,0,0,.45);
+  border-top: 1px solid rgba(255,255,255,.05);
+  background: linear-gradient(180deg, rgba(255,255,255,.02) 0%, rgba(0,0,0,.22) 100%);
 }
 @media (max-width: 480px) {
   .gh-carousel { --gh-gutter: 0.85rem; }
-  .gh-carousel-chrome { padding: 0.85rem var(--gh-gutter); gap: 0.5rem; }
-  .gh-carousel-arrow { width: 2.35rem; height: 2.35rem; border-radius: 8px; }
+  .gh-carousel-chrome { padding: 0.38rem var(--gh-gutter); gap: 0.4rem 0.55rem; }
+  .gh-carousel-arrow { width: 1.95rem; height: 1.95rem; border-radius: 6px; }
+  .gh-carousel-arrow svg { width: 14px; height: 14px; }
 }
 .gh-carousel-arrow {
   flex-shrink: 0;
-  width: 2.65rem;
-  height: 2.65rem;
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,.1);
-  background: rgba(255,255,255,.04);
-  color: rgba(255,255,255,.75);
+  width: 2.05rem;
+  height: 2.05rem;
+  border-radius: 7px;
+  border: 1px solid rgba(255,255,255,.07);
+  background: rgba(255,255,255,.025);
+  color: rgba(255,255,255,.62);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -947,10 +948,10 @@ section { padding:7rem 4rem; position:relative; z-index:2; }
   transition: border-color .2s, color .2s, background .2s, box-shadow .2s;
 }
 .gh-carousel-arrow:hover:not(:disabled) {
-  border-color: rgba(255,255,255,.22);
-  color: #fff;
-  background: rgba(255,255,255,.08);
-  box-shadow: 0 0 0 1px rgba(255,255,255,.06);
+  border-color: rgba(255,255,255,.14);
+  color: rgba(255,255,255,.92);
+  background: rgba(255,255,255,.06);
+  box-shadow: none;
 }
 .gh-carousel-arrow:disabled {
   opacity: 0.28;
@@ -960,39 +961,39 @@ section { padding:7rem 4rem; position:relative; z-index:2; }
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
-.gh-carousel-arrow svg { width: 20px; height: 20px; }
+.gh-carousel-arrow svg { width: 15px; height: 15px; }
 .gh-carousel-dots {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 0.5rem;
-  min-height: 1.25rem;
+  gap: 0.4rem;
+  min-height: 1rem;
   min-width: 0;
   justify-self: center;
   max-width: 100%;
 }
 .gh-carousel-dots[hidden] { display: none !important; }
 .gh-dot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   padding: 0;
   border-radius: 999px;
   border: none;
-  background: rgba(255,255,255,.22);
+  background: rgba(255,255,255,.18);
   cursor: pointer;
   flex-shrink: 0;
   transition: width .28s cubic-bezier(.4, 0, .2, 1), height .28s cubic-bezier(.4, 0, .2, 1),
-    background .2s, opacity .2s, box-shadow .2s;
+    background .2s, opacity .2s;
 }
 .gh-dot:hover:not(.active) {
-  background: rgba(255,255,255,.38);
+  background: rgba(255,255,255,.32);
 }
 .gh-dot.active {
-  width: 1.75rem;
-  height: 6px;
-  background: rgba(255,255,255,.92);
-  box-shadow: 0 0 12px rgba(255,255,255,.12);
+  width: 1.45rem;
+  height: 5px;
+  background: rgba(255,255,255,.85);
+  box-shadow: none;
 }
 .gh-dot:focus-visible {
   outline: 2px solid var(--accent);
@@ -1156,6 +1157,9 @@ section { padding:7rem 4rem; position:relative; z-index:2; }
   border: 1px solid rgba(255,255,255,0.06);
   border-radius: 12px;
   padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
   transition: border-color 0.3s, transform 0.3s;
 }
 .cert-card:hover {
@@ -1166,16 +1170,17 @@ section { padding:7rem 4rem; position:relative; z-index:2; }
   font-family: 'Syne', sans-serif;
   font-weight: 700;
   font-size: 1rem;
-  margin-bottom: 0.5rem;
+  line-height: 1.3;
+  margin: 0;
 }
-.cert-issuer { font-size: 0.85rem; color: var(--txt2); margin-bottom: 0.75rem; }
+.cert-issuer { font-size: 0.85rem; color: var(--txt2); margin: 0; }
 .cert-meta {
   font-family: 'DM Mono', monospace;
   font-size: 0.7rem;
   letter-spacing: 0.08em;
   color: var(--txt3);
   text-transform: uppercase;
-  margin-bottom: 1rem;
+  margin: 0;
 }
 .cert-link {
   font-family: 'DM Mono', monospace;
@@ -1183,6 +1188,7 @@ section { padding:7rem 4rem; position:relative; z-index:2; }
   letter-spacing: 0.08em;
   color: var(--accent);
   text-decoration: none;
+  margin-top: auto;
 }
 .cert-link:hover { text-decoration: underline; }
 .cert-link:focus-visible {
@@ -1826,10 +1832,16 @@ footer {
   </div>
   <div class="cert-grid">
     <div class="cert-card reveal">
-      <div class="cert-name">Google Advanced Data Analytics Professional Certificate</div>
-      <div class="cert-issuer">Google Career Certificates (Coursera)</div>
-      <div class="cert-meta">Completed &middot; Credential link optional</div>
-      <a class="cert-link" href="https://www.coursera.org/professional-certificates/google-advanced-data-analytics" target="_blank" rel="noopener noreferrer">View program on Coursera</a>
+      <div class="cert-name">Google Advanced Data Analytics</div>
+      <div class="cert-issuer">Google (Coursera)</div>
+      <div class="cert-meta">Credential ID: F28ZMTIXO12E</div>
+      <a class="cert-link" href="https://www.coursera.org/verify/F28ZMTIXO12E" target="_blank" rel="noopener noreferrer">View verified certificate</a>
+    </div>
+    <div class="cert-card reveal">
+      <div class="cert-name">Introduction to Model Context Protocol</div>
+      <div class="cert-issuer">Anthropic Education (Skilljar)</div>
+      <div class="cert-meta">Credential ID: aku3rbbb8gdz</div>
+      <a class="cert-link" href="https://verify.skilljar.com/c/aku3rbbb8gdz" target="_blank" rel="noopener noreferrer">View verified certificate</a>
     </div>
   </div>
 </section>
@@ -1925,16 +1937,25 @@ footer {
     'default': '#8b949e'
   };
   var CORE_TECH_FILTERS = [
-    { id: 'python', label: 'Python', keywords: ['python', 'pandas', 'numpy', 'scikit', 'xgboost'] },
-    { id: 'sql', label: 'SQL', keywords: ['sql', 'postgres', 'postgresql', 'dbt', 'bigquery'] },
-    { id: 'ml', label: 'ML', keywords: ['ml', 'machine learning', 'model', 'xgboost', 'scikit'] },
-    { id: 'nlp', label: 'NLP', keywords: ['nlp', 'spacy', 'faiss', 'llm', 'ollama'] },
-    { id: 'dashboard', label: 'Dashboard', keywords: ['dashboard', 'tableau', 'power bi', 'streamlit'] },
+    { id: 'python', label: 'Python', keywords: ['python', 'pandas', 'numpy', 'scikit', 'scipy', 'pytest', 'pip', 'matplotlib', 'seaborn', 'xgboost'] },
+    { id: 'jupyter', label: 'Jupyter', keywords: ['jupyter', 'notebook', 'ipython', 'colab', 'ipynb'] },
+    { id: 'sql', label: 'SQL', keywords: ['sql', 'postgres', 'postgresql', 'sqlite', 'dbt', 'bigquery'] },
+    { id: 'ml', label: 'ML', keywords: ['ml', 'machine learning', 'model', 'xgboost', 'scikit', 'classification', 'regression', 'random forest', 'decision tree', 'logistic', 'feature importance', 'predictive', 'predicting', 'supervised'] },
+    { id: 'nlp', label: 'NLP', keywords: ['nlp', 'spacy', 'faiss', 'llm', 'ollama', 'transformer', 'embedding', 'ner'] },
+    { id: 'viz', label: 'Data Viz', keywords: ['visualization', 'visualisation', 'matplotlib', 'seaborn', 'plotly', 'ggplot', 'chart', 'eda', 'data viz', 'dataviz'] },
+    { id: 'dashboard', label: 'Dashboard', keywords: ['dashboard', 'tableau', 'power bi', 'streamlit', 'smart meter', 'energy', 'iot', 'meter'] },
     { id: 'streamlit', label: 'Streamlit', keywords: ['streamlit'] },
-    { id: 'fullstack', label: 'Full-Stack', keywords: ['full-stack', 'full stack', 'next.js', 'supabase', 'api'] },
+    { id: 'fullstack', label: 'Full-Stack', keywords: ['full-stack', 'full stack', 'next.js', 'supabase', 'api', 'rest api', 'fastapi'] },
     { id: 'nextjs', label: 'Next.js', keywords: ['next.js', 'nextjs'] },
     { id: 'typescript', label: 'TypeScript', keywords: ['typescript'] },
-    { id: 'bi', label: 'BI', keywords: ['power bi', 'tableau', 'business intelligence'] }
+    { id: 'bi', label: 'BI', keywords: ['power bi', 'tableau', 'business intelligence', 'looker'] },
+    { id: 'algorithms', label: 'Algorithms', keywords: ['algorithm', 'sorting', 'insertion sort', 'heap sort', 'quick sort', 'shell sort', 'merge sort', 'huffman', 'data structure', 'shortest path', 'dijkstra', 'vertex', 'traveling sales', 'tsp', 'route optimization', 'graph project', 'spanning tree', 'numerical approximation', 'approximation'] },
+    { id: 'hr-analytics', label: 'HR analytics', keywords: ['turnover', 'employee churn', 'employee turnover', 'hr analytics', 'hr-analytics', 'employee-turnover', 'attrition', 'people analytics', 'workforce'] },
+    { id: 'sports-data', label: 'Sports data', keywords: ['football', 'soccer', 'sports analytics', 'football-soccer', 'data-viz-and-football'] },
+    { id: 'research', label: 'Research', keywords: ['research agent', 'research-agent', 'odds', 'prediction', 'hypothesis', 'experiment design'] },
+    { id: 'systems', label: 'Low-level', keywords: ['assembly', 'risc-v', 'riscv', 'memory map', 'stack frame', 'instruction set', 'embedded', 'bare metal'] },
+    { id: 'accessibility', label: 'A11y', keywords: ['color blind', 'colour blind', 'colorblind', 'color-blind', 'colour-blind', 'blindness', 'protanopia', 'deuteranopia', 'accessibility', 'a11y', 'wcag'] },
+    { id: 'games', label: 'Games / sim', keywords: ['pass-the-pigs', 'pass the pigs', 'dice game', 'probability game', 'monte carlo simulation', 'game simulation'] }
   ];
 
   document.querySelectorAll('a[data-resume-link]').forEach(function (el) {
