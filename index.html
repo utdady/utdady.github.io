@@ -1196,6 +1196,174 @@ section { padding:7rem 4rem; position:relative; z-index:2; }
   outline-offset: 3px;
 }
 
+#beyond { background: var(--bg); }
+.flip-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin-top: 0.5rem;
+}
+@media (max-width: 900px) {
+  .flip-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  .flip-grid { grid-template-columns: 1fr; }
+}
+.flip-card {
+  perspective: 1100px;
+  min-height: 16.5rem;
+  outline: none;
+}
+.flip-card:focus-visible .flip-card-inner {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  min-height: 16.5rem;
+  border-radius: 12px;
+  transition: transform 0.65s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform-style: preserve-3d;
+}
+@media (prefers-reduced-motion: reduce) {
+  .flip-card-inner { transition-duration: 0.01ms; }
+}
+.flip-card:hover .flip-card-inner,
+.flip-card.is-flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+.flip-card-front,
+.flip-card-back {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  padding: 1.35rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--surface);
+  box-sizing: border-box;
+}
+.flip-card-front {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.flip-card-front > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+}
+.flip-icon {
+  font-size: 1.85rem;
+  line-height: 1;
+  display: block;
+}
+.flip-icon.flip-icon--sum {
+  font-family: 'DM Mono', monospace;
+  font-size: 1.7rem;
+}
+.flip-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 1.12rem;
+  color: var(--txt);
+  letter-spacing: -0.02em;
+}
+.flip-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--txt3);
+  max-width: 15rem;
+  line-height: 1.45;
+}
+@media (hover: none), (pointer: coarse) {
+  .flip-label::after {
+    content: ' · Tap to flip';
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    color: var(--txt3);
+    opacity: 0.9;
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .flip-label::after { content: none; display: none; }
+}
+.flip-card-back {
+  transform: rotateY(180deg);
+  text-align: left;
+  justify-content: flex-start;
+  gap: 0.65rem;
+}
+.flip-desc {
+  margin: 0;
+  font-size: 0.84rem;
+  line-height: 1.62;
+  color: var(--txt2);
+}
+.flip-sports {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  flex: 1 1 auto;
+  align-content: flex-start;
+  min-height: 0;
+  margin: 0;
+}
+.flip-sport-pill {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.05em;
+  padding: 0.18rem 0.55rem;
+  border-radius: 3px;
+  background: rgba(0, 229, 195, 0.08);
+  color: var(--accent);
+  border: 1px solid rgba(0, 229, 195, 0.18);
+}
+.flip-back-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: auto;
+  flex-shrink: 0;
+}
+.flip-connection {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.flip-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--bg);
+  background: var(--accent);
+  padding: 0.35rem 0.85rem;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: opacity 0.2s, transform 0.2s;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+.flip-link:hover { opacity: 0.88; transform: translateY(-1px); }
+.flip-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.flip-link svg { width: 11px; height: 11px; flex-shrink: 0; stroke: currentColor; }
+
 #contact {
   background:var(--bg2);
   text-align:center;
@@ -1408,6 +1576,7 @@ footer {
       <li><a href="#github-repos" data-section="github-repos">GitHub</a></li>
       <li><a href="#skills" data-section="skills">Skills</a></li>
       <li><a href="#certifications" data-section="certifications">Certifications</a></li>
+      <li><a href="#beyond" data-section="beyond">Beyond</a></li>
       <li><a href="#contact" data-section="contact">Contact</a></li>
     </ul>
     <a href="mailto:addybhaskar@outlook.com" class="nav-cta">Get in Touch</a>
@@ -1843,6 +2012,153 @@ footer {
       <div class="cert-meta">Credential ID: aku3rbbb8gdz</div>
       <a class="cert-link" href="https://verify.skilljar.com/c/aku3rbbb8gdz" target="_blank" rel="noopener noreferrer">View verified certificate</a>
     </div>
+  </div>
+</section>
+
+<section id="beyond">
+  <div class="reveal">
+    <div class="section-label">Beyond the Data</div>
+    <h2 class="section-title">When I'm Not Coding</h2>
+    <p class="section-sub">Hover a card to flip it.</p>
+  </div>
+
+  <div class="flip-grid">
+
+    <div class="flip-card reveal" data-flip-card tabindex="0" aria-label="Cinephile — flip for details">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div>
+            <span class="flip-icon" aria-hidden="true">&#x1F3AC;</span>
+            <div class="flip-title">Cinephile</div>
+            <div class="flip-label">Arthouse &amp; world film</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <p class="flip-desc">Deep into world cinema — Kurosawa, Tarkovsky, Kieslowski. The way great directors encode meaning into structure is, honestly, just data storytelling by another name.</p>
+          <div class="flip-back-stack">
+            <span class="flip-connection">narrative &rarr; data storytelling</span>
+            <a class="flip-link" href="https://letterboxd.com/addybhaskar/" target="_blank" rel="noopener noreferrer">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              Letterboxd / addybhaskar
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip-card reveal" data-flip-card tabindex="0" aria-label="Sports Nut — flip for details">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div>
+            <span class="flip-icon" aria-hidden="true">&#x26BD;</span>
+            <div class="flip-title">Sports Nut</div>
+            <div class="flip-label">Watch it. Play it. Track it.</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <div class="flip-sports" aria-label="Sports followed">
+            <span class="flip-sport-pill">Football</span>
+            <span class="flip-sport-pill">Cricket</span>
+            <span class="flip-sport-pill">NFL</span>
+            <span class="flip-sport-pill">Basketball</span>
+            <span class="flip-sport-pill">F1</span>
+            <span class="flip-sport-pill">Tennis</span>
+            <span class="flip-sport-pill">Badminton</span>
+            <span class="flip-sport-pill">Squash</span>
+            <span class="flip-sport-pill">Pickleball</span>
+            <span class="flip-sport-pill">Table Tennis</span>
+          </div>
+          <div class="flip-back-stack">
+            <span class="flip-connection">stats &rarr; built Replayd for this</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip-card reveal" data-flip-card tabindex="0" aria-label="Shutterbug — flip for details">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div>
+            <span class="flip-icon" aria-hidden="true">&#x1F4F7;</span>
+            <div class="flip-title">Shutterbug</div>
+            <div class="flip-label">Nature &middot; Architecture &middot; Scenery</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <p class="flip-desc">Drawn to the geometry in nature, the symmetry in architecture, the mood in an overcast skyline. Finding patterns where others see backgrounds.</p>
+          <div class="flip-back-stack">
+            <span class="flip-connection">composition &rarr; visual design</span>
+            <a class="flip-link" href="https://vsco.co/addybhaskar/" target="_blank" rel="noopener noreferrer">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              VSCO / addybhaskar
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip-card reveal" data-flip-card tabindex="0" aria-label="Math Enthusiast — flip for details">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div>
+            <span class="flip-icon flip-icon--sum" aria-hidden="true">&#x2211;</span>
+            <div class="flip-title">Math Enthusiast</div>
+            <div class="flip-label">Analysis &middot; Algebra &middot; Number Theory</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <p class="flip-desc">Integrals for fun. Linear algebra for elegance. Number theory for the rabbit holes. Proofs are the closest thing to magic — the satisfaction is identical to a clean model.</p>
+          <div class="flip-back-stack">
+            <span class="flip-connection">rigor &rarr; ML foundations</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip-card reveal" data-flip-card tabindex="0" aria-label="Food Obsessive — flip for details">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div>
+            <span class="flip-icon" aria-hidden="true">&#x1F372;</span>
+            <div class="flip-title">Food Obsessive</div>
+            <div class="flip-label">Rate. Rank. Revisit.</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <p class="flip-desc">Tracking every good meal on Beli — because if you're going to eat, you might as well build a dataset. Ratings, rankings, cities. Yes, it's a spreadsheet with better UX.</p>
+          <div class="flip-back-stack">
+            <span class="flip-connection">taste &rarr; structured data</span>
+            <a class="flip-link" href="https://beliapp.co/app/addybhaskar" target="_blank" rel="noopener noreferrer">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              Beli / addybhaskar
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip-card reveal" data-flip-card tabindex="0" aria-label="Reader — flip for details">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">
+          <div>
+            <span class="flip-icon" aria-hidden="true">&#x1F4DA;</span>
+            <div class="flip-title">Reader</div>
+            <div class="flip-label">Non-fiction heavy</div>
+          </div>
+        </div>
+        <div class="flip-card-back">
+          <p class="flip-desc">History, ancient civilizations, economics, psychology, autobiographies. Non-fiction as a way of reverse-engineering how the world actually works.</p>
+          <div class="flip-back-stack">
+            <span class="flip-connection">curiosity &rarr; research instinct</span>
+            <a class="flip-link" href="https://www.goodreads.com/user/show/180590072" target="_blank" rel="noopener noreferrer">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              Goodreads profile
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -2644,7 +2960,7 @@ footer {
   });
 
   var navLinkEls = Array.prototype.slice.call(document.querySelectorAll('.nav-links a[href^="#"]'));
-  var sectionIds = ['hero', 'about', 'education', 'experience', 'projects', 'github-repos', 'skills', 'certifications', 'contact'];
+  var sectionIds = ['hero', 'about', 'education', 'experience', 'projects', 'github-repos', 'skills', 'certifications', 'beyond', 'contact'];
   var sections = sectionIds.map(function (id) {
     return document.getElementById(id);
   }).filter(Boolean);
@@ -2679,6 +2995,21 @@ footer {
     activeSectionFromScroll();
   }, { passive: true });
   activeSectionFromScroll();
+
+  var flipFinePointerMq = window.matchMedia('(hover: hover) and (pointer: fine)');
+  document.querySelectorAll('[data-flip-card]').forEach(function (card) {
+    card.addEventListener('click', function (e) {
+      if (flipFinePointerMq.matches) return;
+      if (e.target.closest('a')) return;
+      card.classList.toggle('is-flipped');
+    });
+    card.addEventListener('keydown', function (e) {
+      if (e.target !== card) return;
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault();
+      card.classList.toggle('is-flipped');
+    });
+  });
 
   var menuOpen = false;
   var lastFocus = null;
