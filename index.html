@@ -235,8 +235,17 @@ body.nav-open .nav-backdrop {
   position:relative;
   overflow:hidden;
 }
+#particle-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
 .hero-grid {
   position:absolute; inset:0;
+  z-index: 1;
   background-image:
     linear-gradient(rgba(0,229,195,0.04) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0,229,195,0.04) 1px, transparent 1px);
@@ -1524,9 +1533,148 @@ footer {
   .gh-controls { flex-direction: column; align-items: flex-start; }
 }
 
+@keyframes mp-orb-b1 { from { transform: scaleY(0.3); } to { transform: scaleY(1); } }
+@keyframes mp-orb-b2 { from { transform: scaleY(0.5); } to { transform: scaleY(1); } }
+@keyframes mp-orb-b3 { from { transform: scaleY(0.2); } to { transform: scaleY(1); } }
+@keyframes mp-spin { to { transform: rotate(360deg); } }
+@keyframes mp-orb-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,229,195,0.35), 0 4px 20px rgba(0,0,0,0.5); }
+  50% { box-shadow: 0 0 0 6px rgba(0,229,195,0.1), 0 4px 20px rgba(0,0,0,0.5); }
+}
+#music-player {
+  position: fixed;
+  bottom: 1.6rem;
+  right: 1.6rem;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  user-select: none;
+}
+#mp-orb {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(12,16,24,0.92);
+  border: 1px solid rgba(0,229,195,0.28);
+  color: var(--accent);
+  cursor: pointer;
+  backdrop-filter: blur(18px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+  padding: 0;
+}
+#mp-orb svg { width: 22px; height: 22px; }
+#mp-orb:hover { border-color: rgba(0,229,195,0.6); transform: scale(1.07); }
+#music-player.playing #mp-orb {
+  border-color: rgba(0,229,195,0.55);
+  animation: mp-orb-pulse 2s ease infinite;
+}
+#music-player.playing #mp-orb-vinyl { animation: mp-spin 5s linear infinite; }
+.mp-orb-bar--1 { transform-origin: center bottom; animation: mp-orb-b1 0.5s ease-in-out infinite alternate; }
+.mp-orb-bar--2 { transform-origin: center bottom; animation: mp-orb-b2 0.5s ease-in-out 0.1s infinite alternate; }
+.mp-orb-bar--3 { transform-origin: center bottom; animation: mp-orb-b3 0.5s ease-in-out 0.2s infinite alternate; }
+#mp-panel {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  overflow: hidden;
+  max-width: 0;
+  opacity: 0;
+  transition: max-width 0.38s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease, margin 0.38s;
+  background: rgba(12,16,24,0.92);
+  border: 1px solid rgba(0,229,195,0.18);
+  border-radius: 30px 0 0 30px;
+  border-right: none;
+  padding: 0;
+  margin-right: 0;
+  backdrop-filter: blur(18px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.45);
+  white-space: nowrap;
+}
+#music-player.expanded #mp-panel {
+  max-width: 320px;
+  opacity: 1;
+  padding: 0.5rem 0.6rem 0.5rem 0.9rem;
+  margin-right: -1px;
+}
+#music-player.expanded #mp-orb { border-radius: 0 50% 50% 0; border-left: none; }
+#mp-info { display: flex; flex-direction: column; gap: 0.08rem; min-width: 0; flex: 1; }
+#mp-title {
+  font-family: "DM Mono", monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.05em;
+  color: var(--txt);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+#mp-status {
+  font-family: "DM Mono", monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--txt3);
+}
+#mp-controls { display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0; }
+#mp-play-btn, #mp-mute-btn {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,229,195,0.07);
+  border: 1px solid rgba(0,229,195,0.18);
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--accent);
+  transition: background 0.18s, border-color 0.18s, transform 0.15s;
+  padding: 0;
+}
+#mp-play-btn svg, #mp-mute-btn svg { width: 11px; height: 11px; }
+#mp-play-btn:hover:not(:disabled), #mp-mute-btn:hover {
+  background: rgba(0,229,195,0.16);
+  border-color: rgba(0,229,195,0.45);
+  transform: scale(1.1);
+}
+#mp-play-btn:disabled { opacity: 0.32; cursor: not-allowed; }
+#mp-mute-btn.muted { color: var(--txt3); border-color: rgba(255,255,255,0.1); }
+#mp-vol {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 52px;
+  height: 3px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+#mp-vol::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 0 5px rgba(0,229,195,0.5);
+}
+@media (max-width: 480px) {
+  #music-player { bottom: 1rem; right: 1rem; }
+  #mp-info { display: none; }
+  #music-player.expanded #mp-panel { max-width: 200px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .cursor-glow { display: none !important; }
+  #particle-canvas { display: none !important; }
+  #music-player.playing #mp-orb { animation: none; }
+  #music-player.playing #mp-orb-vinyl { animation: none; }
+  .mp-orb-bar--1, .mp-orb-bar--2, .mp-orb-bar--3 { animation: none !important; }
   .hero-eyebrow, .hero-name, .hero-tagline, .hero-sub, .hero-actions, .hero-stats {
     animation: none !important;
     opacity: 1 !important;
@@ -1586,6 +1734,7 @@ footer {
 <main id="main">
 
 <section id="hero" aria-label="Introduction">
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
   <div class="hero-grid" aria-hidden="true"></div>
   <div style="position:relative;z-index:2;max-width:1100px;">
     <p class="hero-eyebrow">Available for Data roles</p>
@@ -2217,6 +2366,46 @@ footer {
   <span>Built with care — no lorem ipsum</span>
 </footer>
 
+<div id="music-player" aria-label="Background music player" aria-expanded="false">
+  <button type="button" id="mp-orb" aria-label="Open music player" title="Music player">
+    <svg id="mp-orb-vinyl" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="16" cy="16" r="12" stroke="currentColor" stroke-width="1.4" opacity="0.35"/>
+      <circle cx="16" cy="16" r="5.5" stroke="currentColor" stroke-width="1.4" opacity="0.55"/>
+      <circle cx="16" cy="16" r="2" fill="currentColor"/>
+      <path d="M16 4 A12 12 0 0 1 26.4 22" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+    </svg>
+    <svg id="mp-orb-bars" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="display:none">
+      <rect class="mp-orb-bar mp-orb-bar--1" x="5" y="14" width="4" height="14" rx="2" fill="currentColor"/>
+      <rect class="mp-orb-bar mp-orb-bar--2" x="12" y="8" width="4" height="20" rx="2" fill="currentColor"/>
+      <rect class="mp-orb-bar mp-orb-bar--3" x="19" y="11" width="4" height="17" rx="2" fill="currentColor"/>
+    </svg>
+  </button>
+  <div id="mp-panel">
+    <div id="mp-info">
+      <span id="mp-title">canyouhearlamusica</span>
+      <span id="mp-status">Muted</span>
+    </div>
+    <div id="mp-controls">
+      <button type="button" id="mp-play-btn" aria-label="Play / pause" title="Play / Pause">
+        <svg id="mp-play-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+        <svg id="mp-pause-icon" viewBox="0 0 24 24" fill="currentColor" style="display:none" aria-hidden="true"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      </button>
+      <button type="button" id="mp-mute-btn" class="muted" aria-label="Unmute" title="Muted — click to unmute">
+        <svg id="mp-muted-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+          <line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
+        </svg>
+        <svg id="mp-sound-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none" aria-hidden="true">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+        </svg>
+      </button>
+      <input id="mp-vol" type="range" min="0" max="1" step="0.01" value="0" aria-label="Volume"/>
+    </div>
+  </div>
+</div>
+
 <script>
 (function () {
   'use strict';
@@ -2300,6 +2489,367 @@ footer {
       glow.style.top = e.clientY + 'px';
     });
   }
+
+  (function initParticlesAndMusic() {
+    var PALETTE = [
+      { r: 0, g: 229, b: 195 },
+      { r: 255, g: 98, b: 64 },
+      { r: 167, g: 139, b: 250 },
+      { r: 56, g: 189, b: 248 },
+      { r: 255, g: 200, b: 60 },
+      { r: 240, g: 100, b: 180 },
+      { r: 80, g: 250, b: 123 },
+      { r: 220, g: 231, b: 245 }
+    ];
+
+    var audioCtx = null;
+    var analyser = null;
+    var dataArray = null;
+    var sourceNode = null;
+    var audioEl = null;
+    var beat = 0;
+    var musicActive = false;
+
+    var canvas = document.getElementById('particle-canvas');
+    var particlesEnabled = motionOk() && !!canvas;
+    var ctx = particlesEnabled ? canvas.getContext('2d') : null;
+    var W;
+    var H;
+    var particles;
+    var raf = null;
+    var mouse = { x: -9999, y: -9999 };
+    var N = 120;
+    var noteEnergy = particlesEnabled ? new Float32Array(N) : null;
+    var NOTE_BINS = 64;
+
+    function makeParticle() {
+      var col = PALETTE[Math.floor(Math.random() * PALETTE.length)];
+      var startX = Math.random() < 0.15 ? -Math.random() * 200 : Math.random() * W;
+      return {
+        x: startX,
+        y: Math.random() * H,
+        baseSpeed: 0.4 + Math.random() * 0.7,
+        vx: 0,
+        vy: (Math.random() - 0.5) * 0.14,
+        r: 1.2 + Math.random() * 1.6,
+        alpha: 0.18 + Math.random() * 0.32,
+        col: col,
+        colIdx: Math.floor(Math.random() * PALETTE.length)
+      };
+    }
+
+    function particleInit() {
+      if (!particlesEnabled || !canvas || !ctx) return;
+      W = canvas.width = canvas.offsetWidth;
+      H = canvas.height = canvas.offsetHeight;
+      particles = [];
+      for (var i = 0; i < N; i++) particles.push(makeParticle());
+    }
+
+    function getBassEnergy() {
+      if (!analyser || !dataArray) return 0;
+      analyser.getByteFrequencyData(dataArray);
+      var sum = 0;
+      for (var i = 0; i < 9; i++) sum += dataArray[i];
+      return sum / (9 * 255);
+    }
+
+    function updateNoteEnergy() {
+      if (!particlesEnabled || !noteEnergy) return;
+      if (!analyser || !dataArray || !musicActive) {
+        for (var k = 0; k < N; k++) noteEnergy[k] *= 0.85;
+        return;
+      }
+      analyser.getByteFrequencyData(dataArray);
+      var bins = analyser.frequencyBinCount;
+      for (var i = 0; i < N; i++) {
+        var bin = Math.floor(((i % NOTE_BINS) / NOTE_BINS) * Math.min(bins - 1, 110));
+        var raw = dataArray[bin] / 255;
+        noteEnergy[i] += (raw - noteEnergy[i]) * 0.22;
+      }
+    }
+
+    function draw() {
+      if (!particlesEnabled || !ctx) return;
+      ctx.clearRect(0, 0, W, H);
+
+      var rawBeat = getBassEnergy();
+      beat += (rawBeat - beat) * 0.18;
+      updateNoteEnergy();
+
+      var mx = mouse.x;
+      var my = mouse.y;
+      var speedMul = 1 + beat * 1.2;
+      var beatPulse = 1 + beat * 0.7;
+
+      for (var i = 0; i < particles.length; i++) {
+        var p = particles[i];
+        var ne = noteEnergy[i];
+
+        var dx = p.x - mx;
+        var dy = p.y - my;
+        var distSq = dx * dx + dy * dy;
+        var SOFT_R = 95;
+        var SOFT_R2 = SOFT_R * SOFT_R;
+
+        if (distSq < SOFT_R2 && mx > 0) {
+          var dist = Math.sqrt(distSq);
+          var t = 1 - dist / SOFT_R;
+          var norm = dist > 0.5 ? dist : 0.5;
+          var defl = t * t * 0.55;
+          p.vy += (dy / norm) * defl * 0.065;
+          p.vx -= t * t * 0.045;
+        }
+
+        if (musicActive && beat > 0.08) {
+          p.vx += (Math.random() - 0.3) * beat * 0.25;
+          p.vy += (Math.random() - 0.5) * beat * 0.15;
+        }
+
+        p.vx += (p.baseSpeed * speedMul - p.vx) * 0.035;
+        p.vy += (0 - p.vy) * 0.028;
+        p.vx *= 0.978;
+        p.vy *= 0.965;
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x > W + 10) {
+          p.x = -8;
+          p.y = Math.random() * H;
+          p.vy = (Math.random() - 0.5) * 0.14;
+        }
+        if (p.y < -6) p.y = H + 6;
+        if (p.y > H + 6) p.y = -6;
+
+        var c = p.col;
+        if (musicActive && beat > 0.25) {
+          var next = PALETTE[(p.colIdx + 1) % PALETTE.length];
+          var bl = Math.min((beat - 0.25) * 2.5, 1);
+          c = {
+            r: Math.round(p.col.r + (next.r - p.col.r) * bl),
+            g: Math.round(p.col.g + (next.g - p.col.g) * bl),
+            b: Math.round(p.col.b + (next.b - p.col.b) * bl)
+          };
+          if (bl > 0.9) {
+            p.colIdx = (p.colIdx + 1) % PALETTE.length;
+            p.col = PALETTE[p.colIdx];
+          }
+        }
+
+        var speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+        var trailLen = 3.5 + speed * 4;
+        var drawR = p.r * beatPulse * 0.65;
+        var rgb = c.r + ',' + c.g + ',' + c.b;
+        var noteBoost = musicActive ? ne * 0.9 : 0;
+        var al = Math.min(p.alpha * (1 + beat * 0.3) + noteBoost * 0.55, 0.95);
+        var glowR = drawR * (1 + noteBoost * 2.8);
+
+        if (musicActive && ne > 0.18) {
+          var glowOpacity = ne * 0.22;
+          var haloR = glowR * 3.5;
+          var grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, haloR);
+          grad.addColorStop(0, 'rgba(' + rgb + ',' + glowOpacity + ')');
+          grad.addColorStop(1, 'rgba(' + rgb + ',0)');
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, haloR, 0, Math.PI * 2);
+          ctx.fillStyle = grad;
+          ctx.fill();
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(p.x - p.vx * trailLen, p.y - p.vy * trailLen);
+        ctx.lineTo(p.x, p.y);
+        ctx.strokeStyle = 'rgba(' + rgb + ',' + al * 0.5 + ')';
+        ctx.lineWidth = glowR * 0.8;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, glowR, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(' + rgb + ',' + al + ')';
+        ctx.fill();
+      }
+
+      raf = requestAnimationFrame(draw);
+    }
+
+    var hero = document.getElementById('hero');
+    if (particlesEnabled && hero && canvas) {
+      hero.addEventListener(
+        'mousemove',
+        function (e) {
+          var rect = canvas.getBoundingClientRect();
+          mouse.x = e.clientX - rect.left;
+          mouse.y = e.clientY - rect.top;
+        },
+        { passive: true }
+      );
+      hero.addEventListener('mouseleave', function () {
+        mouse.x = -9999;
+        mouse.y = -9999;
+      });
+      window.addEventListener('resize', function () {
+        if (raf) cancelAnimationFrame(raf);
+        particleInit();
+        draw();
+      });
+      particleInit();
+      draw();
+    }
+
+    var player = document.getElementById('music-player');
+    if (!player) return;
+
+    var orbBtn = document.getElementById('mp-orb');
+    var orbVinyl = document.getElementById('mp-orb-vinyl');
+    var orbBars = document.getElementById('mp-orb-bars');
+    var playBtn = document.getElementById('mp-play-btn');
+    var muteBtn = document.getElementById('mp-mute-btn');
+    var mutedIcon = document.getElementById('mp-muted-icon');
+    var soundIcon = document.getElementById('mp-sound-icon');
+    var volSlider = document.getElementById('mp-vol');
+    var mpTitle = document.getElementById('mp-title');
+    var mpStatus = document.getElementById('mp-status');
+    var playIcon = document.getElementById('mp-play-icon');
+    var pauseIcon = document.getElementById('mp-pause-icon');
+    var isMuted = true;
+
+    orbBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var expanded = player.classList.toggle('expanded');
+      player.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    });
+
+    document.addEventListener('click', function (e) {
+      if (player.classList.contains('expanded') && !player.contains(e.target)) {
+        player.classList.remove('expanded');
+        player.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    function updateStatus() {
+      if (isMuted) {
+        mpStatus.textContent = 'Muted';
+        return;
+      }
+      mpStatus.textContent = musicActive ? 'Playing' : 'Paused';
+    }
+
+    function applyMute() {
+      if (audioEl) audioEl.muted = isMuted;
+      if (isMuted) {
+        mutedIcon.style.display = '';
+        soundIcon.style.display = 'none';
+        muteBtn.classList.add('muted');
+        muteBtn.title = 'Muted — click to unmute';
+        muteBtn.setAttribute('aria-label', 'Unmute');
+      } else {
+        mutedIcon.style.display = 'none';
+        soundIcon.style.display = '';
+        muteBtn.classList.remove('muted');
+        muteBtn.title = 'Mute';
+        muteBtn.setAttribute('aria-label', 'Mute');
+      }
+      updateStatus();
+    }
+
+    function setPlayState(playing) {
+      musicActive = playing;
+      if (playing) {
+        player.classList.add('playing');
+        playIcon.style.display = 'none';
+        pauseIcon.style.display = '';
+        orbVinyl.style.display = 'none';
+        orbBars.style.display = '';
+        updateStatus();
+      } else {
+        player.classList.remove('playing');
+        playIcon.style.display = '';
+        pauseIcon.style.display = 'none';
+        orbVinyl.style.display = '';
+        orbBars.style.display = 'none';
+        updateStatus();
+        beat = 0;
+      }
+    }
+
+    function teardownAudioGraph() {
+      if (sourceNode) {
+        try {
+          sourceNode.disconnect();
+        } catch (e) {}
+        sourceNode = null;
+      }
+      if (analyser) {
+        try {
+          analyser.disconnect();
+        } catch (e2) {}
+        analyser = null;
+      }
+      dataArray = null;
+    }
+
+    function setupAudio(sourceUrl, trackName) {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+      if (audioEl) {
+        audioEl.pause();
+        audioEl.removeAttribute('src');
+        audioEl.load();
+      }
+      teardownAudioGraph();
+
+      audioEl = new Audio();
+      audioEl.src = sourceUrl;
+      audioEl.volume = parseFloat(volSlider.value);
+      audioEl.muted = isMuted;
+
+      sourceNode = audioCtx.createMediaElementSource(audioEl);
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 512;
+      dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+      sourceNode.connect(analyser);
+      analyser.connect(audioCtx.destination);
+
+      mpTitle.textContent = (trackName || 'Track').slice(0, 22);
+      playBtn.disabled = false;
+
+      audioEl.addEventListener('ended', function onEnded() {
+        setPlayState(false);
+      });
+
+      audioEl.play().then(function () {
+        setPlayState(true);
+      }).catch(function () {
+        setPlayState(false);
+      });
+    }
+
+    muteBtn.addEventListener('click', function () {
+      isMuted = !isMuted;
+      applyMute();
+    });
+
+    playBtn.addEventListener('click', function () {
+      if (!audioEl) return;
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      if (audioEl.paused) {
+        audioEl.play();
+        setPlayState(true);
+      } else {
+        audioEl.pause();
+        setPlayState(false);
+      }
+    });
+
+    volSlider.addEventListener('input', function () {
+      if (audioEl) audioEl.volume = parseFloat(volSlider.value);
+    });
+
+    setupAudio('canyouhearlamusica.mp3', 'canyouhearlamusica');
+    applyMute();
+  })();
 
   var revealObserver = new IntersectionObserver(function (entries) {
     entries.forEach(function (e) {
