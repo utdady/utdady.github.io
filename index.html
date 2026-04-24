@@ -1765,6 +1765,9 @@ footer {
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
         LinkedIn
       </a>
+      <a href="https://leetcode.com/u/man29utd11/" target="_blank" rel="noopener noreferrer" class="btn-secondary">
+        LeetCode
+      </a>
     </div>
     <div class="hero-stats">
       <div class="stat-item"><span class="stat-num">3+</span><span class="stat-label">Internships</span></div>
@@ -2519,8 +2522,17 @@ footer {
     var raf = null;
     var mouse = { x: -9999, y: -9999 };
     var N = 120;
-    var noteEnergy = particlesEnabled ? new Float32Array(N) : null;
     var NOTE_BINS = 64;
+    var COLOR_NOTE_BANDS = [
+      [0.02, 0.12],
+      [0.12, 0.22],
+      [0.22, 0.34],
+      [0.34, 0.46],
+      [0.46, 0.60],
+      [0.60, 0.76],
+      [0.76, 0.88],
+      [0.88, 0.98]
+    ];
 
     function makeParticle() {
       var col = PALETTE[Math.floor(Math.random() * PALETTE.length)];
@@ -2554,19 +2566,20 @@ footer {
       return sum / (9 * 255);
     }
 
-    function updateNoteEnergy() {
-      if (!particlesEnabled || !noteEnergy) return;
-      if (!analyser || !dataArray || !musicActive) {
-        for (var k = 0; k < N; k++) noteEnergy[k] *= 0.85;
-        return;
-      }
-      analyser.getByteFrequencyData(dataArray);
+    function getBandEnergy(colorIdx) {
+      if (!analyser || !dataArray || !musicActive) return 0;
       var bins = analyser.frequencyBinCount;
-      for (var i = 0; i < N; i++) {
-        var bin = Math.floor(((i % NOTE_BINS) / NOTE_BINS) * Math.min(bins - 1, 110));
-        var raw = dataArray[bin] / 255;
-        noteEnergy[i] += (raw - noteEnergy[i]) * 0.22;
+      var band = COLOR_NOTE_BANDS[colorIdx % COLOR_NOTE_BANDS.length];
+      var maxBin = Math.max(1, Math.min(bins - 1, 120));
+      var start = Math.max(0, Math.floor(maxBin * band[0]));
+      var end = Math.min(maxBin, Math.max(start + 1, Math.floor(maxBin * band[1])));
+      var sum = 0;
+      var count = 0;
+      for (var i = start; i <= end; i++) {
+        sum += dataArray[i];
+        count++;
       }
+      return count ? sum / (count * 255) : 0;
     }
 
     function draw() {
@@ -2575,16 +2588,14 @@ footer {
 
       var rawBeat = getBassEnergy();
       beat += (rawBeat - beat) * 0.18;
-      updateNoteEnergy();
 
       var mx = mouse.x;
       var my = mouse.y;
       var speedMul = 1 + beat * 1.2;
-      var beatPulse = 1 + beat * 0.7;
 
       for (var i = 0; i < particles.length; i++) {
         var p = particles[i];
-        var ne = noteEnergy[i];
+        var ne = getBandEnergy(p.colIdx);
 
         var dx = p.x - mx;
         var dy = p.y - my;
@@ -2639,15 +2650,15 @@ footer {
 
         var speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
         var trailLen = 3.5 + speed * 4;
-        var drawR = p.r * beatPulse * 0.65;
+        var drawR = p.r * 0.75;
         var rgb = c.r + ',' + c.g + ',' + c.b;
         var noteBoost = musicActive ? ne * 0.9 : 0;
         var al = Math.min(p.alpha * (1 + beat * 0.3) + noteBoost * 0.55, 0.95);
-        var glowR = drawR * (1 + noteBoost * 2.8);
+        var glowR = drawR;
 
         if (musicActive && ne > 0.18) {
           var glowOpacity = ne * 0.22;
-          var haloR = glowR * 3.5;
+          var haloR = drawR * (2.3 + noteBoost * 2.6);
           var grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, haloR);
           grad.addColorStop(0, 'rgba(' + rgb + ',' + glowOpacity + ')');
           grad.addColorStop(1, 'rgba(' + rgb + ',0)');
@@ -2661,11 +2672,11 @@ footer {
         ctx.moveTo(p.x - p.vx * trailLen, p.y - p.vy * trailLen);
         ctx.lineTo(p.x, p.y);
         ctx.strokeStyle = 'rgba(' + rgb + ',' + al * 0.5 + ')';
-        ctx.lineWidth = glowR * 0.8;
+        ctx.lineWidth = drawR * (0.8 + noteBoost * 0.9);
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.arc(p.x, p.y, glowR, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, drawR, 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(' + rgb + ',' + al + ')';
         ctx.fill();
       }
@@ -2789,7 +2800,7 @@ footer {
       dataArray = null;
     }
 
-    function setupAudio(sourceUrl, trackName) {
+    function setupAudio(sourceUrl, trackName, onSourceError) {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
       if (audioEl) {
@@ -2803,6 +2814,11 @@ footer {
       audioEl.src = sourceUrl;
       audioEl.volume = parseFloat(volSlider.value);
       audioEl.muted = isMuted;
+      if (typeof onSourceError === 'function') {
+        audioEl.addEventListener('error', function onAudioError() {
+          onSourceError();
+        }, { once: true });
+      }
 
       sourceNode = audioCtx.createMediaElementSource(audioEl);
       analyser = audioCtx.createAnalyser();
@@ -2847,7 +2863,23 @@ footer {
       if (audioEl) audioEl.volume = parseFloat(volSlider.value);
     });
 
-    setupAudio('canyouhearlamusica.mp3', 'canyouhearlamusica');
+    function loadTrackWithFallback(sourceList, trackName) {
+      var idx = 0;
+      function tryNext() {
+        if (idx >= sourceList.length) {
+          setPlayState(false);
+          return;
+        }
+        var source = sourceList[idx++];
+        setupAudio(source, trackName, tryNext);
+      }
+      tryNext();
+    }
+
+    loadTrackWithFallback(
+      ['private-audio/canyouhearlamusica.mp3', 'canyouhearlamusica.mp3'],
+      'canyouhearlamusica'
+    );
     applyMute();
   })();
 
