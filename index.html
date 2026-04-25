@@ -176,11 +176,13 @@ body.nav-open .nav-toggle-bar::after { top: 0; transform: rotate(-45deg); }
   background: rgba(0,0,0,0.55);
   opacity: 0;
   visibility: hidden;
+  pointer-events: none;
   transition: opacity 0.25s ease, visibility 0.25s ease;
 }
 body.nav-open .nav-backdrop {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
 }
 
 .nav-links { display:flex; gap:2rem; list-style:none; align-items: center; margin: 0; padding: 0; }
@@ -1543,13 +1545,14 @@ footer {
 }
 #music-player {
   position: fixed;
-  bottom: 1.6rem;
-  right: 1.6rem;
-  z-index: 90;
+  bottom: max(1.6rem, env(safe-area-inset-bottom, 0px));
+  right: max(1.6rem, env(safe-area-inset-right, 0px));
+  z-index: 120;
   display: flex;
   align-items: center;
   gap: 0;
   user-select: none;
+  touch-action: manipulation;
 }
 #mp-orb {
   width: 46px;
@@ -1567,6 +1570,7 @@ footer {
   box-shadow: 0 4px 20px rgba(0,0,0,0.5);
   transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 #mp-orb svg { width: 22px; height: 22px; }
 #mp-orb:hover { border-color: rgba(0,229,195,0.6); transform: scale(1.07); }
@@ -1585,6 +1589,7 @@ footer {
   overflow: hidden;
   max-width: 0;
   opacity: 0;
+  pointer-events: none;
   transition: max-width 0.38s cubic-bezier(0.4,0,0.2,1), opacity 0.28s ease, margin 0.38s;
   background: rgba(12,16,24,0.92);
   border: 1px solid rgba(0,229,195,0.18);
@@ -1599,6 +1604,7 @@ footer {
 #music-player.expanded #mp-panel {
   max-width: 320px;
   opacity: 1;
+  pointer-events: auto;
   padding: 0.5rem 0.6rem 0.5rem 0.9rem;
   margin-right: -1px;
 }
@@ -1634,6 +1640,7 @@ footer {
   color: var(--accent);
   transition: background 0.18s, border-color 0.18s, transform 0.15s;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 #mp-play-btn svg, #mp-mute-btn svg { width: 11px; height: 11px; }
 #mp-play-btn:hover:not(:disabled), #mp-mute-btn:hover {
@@ -1663,9 +1670,30 @@ footer {
   box-shadow: 0 0 5px rgba(0,229,195,0.5);
 }
 @media (max-width: 480px) {
-  #music-player { bottom: 1rem; right: 1rem; }
+  #music-player {
+    bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+    right: max(1rem, env(safe-area-inset-right, 0px));
+  }
   #mp-info { display: none; }
   #music-player.expanded #mp-panel { max-width: 200px; }
+  #mp-orb {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+  }
+  #mp-play-btn, #mp-mute-btn {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+  }
+  #mp-play-btn svg, #mp-mute-btn svg { width: 14px; height: 14px; }
+  #mp-vol {
+    width: 72px;
+    height: 28px;
+  }
+  #mp-vol::-webkit-slider-thumb { width: 22px; height: 22px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2724,14 +2752,24 @@ footer {
     var playIcon = document.getElementById('mp-play-icon');
     var pauseIcon = document.getElementById('mp-pause-icon');
     var isMuted = true;
+    var mpIgnoreOutsideCloseUntil = 0;
 
     orbBtn.addEventListener('click', function (e) {
       e.stopPropagation();
       var expanded = player.classList.toggle('expanded');
       player.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      if (expanded) {
+        mpIgnoreOutsideCloseUntil = Date.now() + 400;
+        if (audioCtx && audioCtx.state === 'suspended') {
+          try {
+            audioCtx.resume();
+          } catch (eResume) {}
+        }
+      }
     });
 
     document.addEventListener('click', function (e) {
+      if (Date.now() < mpIgnoreOutsideCloseUntil) return;
       if (player.classList.contains('expanded') && !player.contains(e.target)) {
         player.classList.remove('expanded');
         player.setAttribute('aria-expanded', 'false');
