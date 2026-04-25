@@ -1498,10 +1498,10 @@ footer {
 
 @media (max-width:768px) {
   nav { padding:1rem 1.5rem; }
-  .nav-inner { position: relative; }
-  .nav-toggle { display: flex; order: 2; }
-  .nav-cta { order: 3; font-size: 0.7rem; padding: 0.4rem 0.9rem; }
-  .nav-logo { order: 1; }
+  .nav-inner { position: relative; justify-content: flex-start; }
+  .nav-toggle { display: flex; order: 1; margin-right: 0.75rem; }
+  .nav-logo { order: 2; }
+  .nav-cta { order: 3; margin-left: auto; font-size: 0.7rem; padding: 0.4rem 0.9rem; }
   .nav-backdrop { display: block !important; }
   .nav-links {
     position: fixed;
@@ -1674,26 +1674,36 @@ footer {
     bottom: max(1rem, env(safe-area-inset-bottom, 0px));
     right: max(1rem, env(safe-area-inset-right, 0px));
   }
-  #mp-info { display: none; }
-  #music-player.expanded #mp-panel { max-width: 200px; }
+  #mp-info {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+  }
+  #music-player.expanded #mp-panel {
+    max-width: min(92vw, 300px);
+    padding: 0.45rem 0.55rem 0.45rem 0.75rem;
+    gap: 0.5rem;
+  }
+  #mp-title { max-width: 90px; font-size: 0.62rem; }
+  #mp-status { font-size: 0.5rem; letter-spacing: 0.08em; }
   #mp-orb {
-    width: 48px;
-    height: 48px;
-    min-width: 48px;
-    min-height: 48px;
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    min-height: 46px;
   }
   #mp-play-btn, #mp-mute-btn {
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    min-height: 40px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
   }
-  #mp-play-btn svg, #mp-mute-btn svg { width: 14px; height: 14px; }
+  #mp-play-btn svg, #mp-mute-btn svg { width: 12px; height: 12px; }
   #mp-vol {
-    width: 72px;
-    height: 28px;
+    width: 56px;
+    height: 22px;
   }
-  #mp-vol::-webkit-slider-thumb { width: 22px; height: 22px; }
+  #mp-vol::-webkit-slider-thumb { width: 14px; height: 14px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
