@@ -1655,10 +1655,15 @@ footer {
   appearance: none;
   width: 52px;
   height: 3px;
-  background: rgba(255,255,255,0.1);
-  border-radius: 2px;
+  background: transparent;
+  border-radius: 999px;
   outline: none;
   cursor: pointer;
+}
+#mp-vol::-webkit-slider-runnable-track {
+  height: 3px;
+  background: rgba(255,255,255,0.14);
+  border-radius: 999px;
 }
 #mp-vol::-webkit-slider-thumb {
   -webkit-appearance: none;
@@ -1667,6 +1672,20 @@ footer {
   border-radius: 50%;
   background: var(--accent);
   cursor: pointer;
+  margin-top: -3px;
+  box-shadow: 0 0 5px rgba(0,229,195,0.5);
+}
+#mp-vol::-moz-range-track {
+  height: 3px;
+  background: rgba(255,255,255,0.14);
+  border-radius: 999px;
+}
+#mp-vol::-moz-range-thumb {
+  width: 9px;
+  height: 9px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent);
   box-shadow: 0 0 5px rgba(0,229,195,0.5);
 }
 @media (max-width: 480px) {
@@ -1701,9 +1720,14 @@ footer {
   #mp-play-btn svg, #mp-mute-btn svg { width: 12px; height: 12px; }
   #mp-vol {
     width: 56px;
-    height: 22px;
+    height: 3px;
   }
-  #mp-vol::-webkit-slider-thumb { width: 14px; height: 14px; }
+  #mp-vol::-webkit-slider-thumb {
+    width: 11px;
+    height: 11px;
+    margin-top: -4px;
+  }
+  #mp-vol::-moz-range-thumb { width: 11px; height: 11px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2597,7 +2621,7 @@ footer {
     }
 
     function getBassEnergy() {
-      if (!analyser || !dataArray) return 0;
+      if (!analyser || !dataArray || !isParticlesReactive()) return 0;
       analyser.getByteFrequencyData(dataArray);
       var sum = 0;
       for (var i = 0; i < 9; i++) sum += dataArray[i];
@@ -2605,7 +2629,7 @@ footer {
     }
 
     function getBandEnergy(colorIdx) {
-      if (!analyser || !dataArray || !musicActive) return 0;
+      if (!analyser || !dataArray || !isParticlesReactive()) return 0;
       var bins = analyser.frequencyBinCount;
       var band = COLOR_NOTE_BANDS[colorIdx % COLOR_NOTE_BANDS.length];
       var maxBin = Math.max(1, Math.min(bins - 1, 120));
@@ -2650,7 +2674,7 @@ footer {
           p.vx -= t * t * 0.045;
         }
 
-        if (musicActive && beat > 0.08) {
+        if (isParticlesReactive() && beat > 0.08) {
           p.vx += (Math.random() - 0.3) * beat * 0.25;
           p.vy += (Math.random() - 0.5) * beat * 0.15;
         }
@@ -2672,7 +2696,7 @@ footer {
         if (p.y > H + 6) p.y = -6;
 
         var c = p.col;
-        if (musicActive && beat > 0.25) {
+        if (isParticlesReactive() && beat > 0.25) {
           var next = PALETTE[(p.colIdx + 1) % PALETTE.length];
           var bl = Math.min((beat - 0.25) * 2.5, 1);
           c = {
@@ -2690,11 +2714,11 @@ footer {
         var trailLen = 3.5 + speed * 4;
         var drawR = p.r * 0.75;
         var rgb = c.r + ',' + c.g + ',' + c.b;
-        var noteBoost = musicActive ? ne * 0.9 : 0;
+        var noteBoost = isParticlesReactive() ? ne * 0.9 : 0;
         var al = Math.min(p.alpha * (1 + beat * 0.3) + noteBoost * 0.55, 0.95);
         var glowR = drawR;
 
-        if (musicActive && ne > 0.18) {
+        if (isParticlesReactive() && ne > 0.18) {
           var glowOpacity = ne * 0.22;
           var haloR = drawR * (2.3 + noteBoost * 2.6);
           var grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, haloR);
@@ -2763,6 +2787,12 @@ footer {
     var pauseIcon = document.getElementById('mp-pause-icon');
     var isMuted = true;
     var mpIgnoreOutsideCloseUntil = 0;
+
+    function isParticlesReactive() {
+      if (!musicActive || !audioEl) return false;
+      if (isMuted || audioEl.muted) return false;
+      return audioEl.volume > 0.02;
+    }
 
     orbBtn.addEventListener('click', function (e) {
       e.stopPropagation();
@@ -2909,6 +2939,7 @@ footer {
 
     volSlider.addEventListener('input', function () {
       if (audioEl) audioEl.volume = parseFloat(volSlider.value);
+      if (!isParticlesReactive()) beat = 0;
     });
 
     function loadTrackWithFallback(sourceList, trackName) {
