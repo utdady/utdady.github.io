@@ -458,8 +458,10 @@ body.nav-open .nav-backdrop {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100vw;
   gap: 0.5rem;
   margin-top: 2rem;
+  margin-left: calc(50% - 50vw);
   padding-top: 0.25rem;
   opacity: 0;
   animation: fadeIn 1s ease 1.2s forwards;
@@ -1635,9 +1637,29 @@ footer .music-note {
   font-size: 0.66rem;
   letter-spacing: 0.05em;
   color: var(--txt);
+  display: block;
+  position: relative;
   overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: nowrap;
   max-width: 120px;
+}
+#mp-title-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.2rem;
+  white-space: nowrap;
+  will-change: transform;
+}
+.mp-title-copy {
+  display: inline-block;
+  white-space: nowrap;
+}
+#mp-title.scrolling #mp-title-track {
+  animation: mp-title-marquee var(--mp-title-duration, 9s) linear infinite;
+}
+@keyframes mp-title-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-1 * var(--mp-title-shift, 0px))); }
 }
 #mp-status {
   font-family: "DM Mono", monospace;
@@ -2854,6 +2876,27 @@ footer .music-note {
       }
     ];
     var currentTrackIndex = 0;
+    var mpTitleTrack = document.getElementById('mp-title-track');
+    var mpTitleCopyA;
+    var mpTitleCopyB;
+    if (!mpTitleTrack) {
+      mpTitleTrack = document.createElement('span');
+      mpTitleTrack.id = 'mp-title-track';
+      mpTitleCopyA = document.createElement('span');
+      mpTitleCopyA.className = 'mp-title-copy';
+      mpTitleCopyA.textContent = mpTitle.textContent;
+      mpTitleCopyB = document.createElement('span');
+      mpTitleCopyB.className = 'mp-title-copy';
+      mpTitleCopyB.textContent = '';
+      mpTitle.textContent = '';
+      mpTitleTrack.appendChild(mpTitleCopyA);
+      mpTitleTrack.appendChild(mpTitleCopyB);
+      mpTitle.appendChild(mpTitleTrack);
+    } else {
+      var copies = mpTitleTrack.querySelectorAll('.mp-title-copy');
+      mpTitleCopyA = copies[0];
+      mpTitleCopyB = copies[1];
+    }
 
     function isParticlesReactive() {
       if (!musicActive || !audioEl) return false;
@@ -2889,6 +2932,27 @@ footer .music-note {
         return;
       }
       mpStatus.textContent = musicActive ? 'Playing' : 'Paused';
+    }
+
+    function syncTitleMarquee() {
+      var overflow = mpTitleCopyA.scrollWidth - mpTitle.clientWidth;
+      if (overflow > 4) {
+        mpTitleCopyB.textContent = mpTitleCopyA.textContent;
+        mpTitle.classList.add('scrolling');
+        mpTitle.style.setProperty('--mp-title-shift', (mpTitleCopyA.scrollWidth + 20) + 'px');
+        mpTitle.style.setProperty('--mp-title-duration', Math.max(8, overflow / 18) + 's');
+      } else {
+        mpTitleCopyB.textContent = '';
+        mpTitle.classList.remove('scrolling');
+        mpTitle.style.removeProperty('--mp-title-shift');
+        mpTitle.style.removeProperty('--mp-title-duration');
+      }
+    }
+
+    function setTrackTitle(title) {
+      mpTitleCopyA.textContent = title || 'Track';
+      mpTitleCopyB.textContent = '';
+      requestAnimationFrame(syncTitleMarquee);
     }
 
     function applyMute() {
@@ -2973,7 +3037,7 @@ footer .music-note {
       sourceNode.connect(analyser);
       analyser.connect(audioCtx.destination);
 
-      mpTitle.textContent = (trackName || 'Track').slice(0, 22);
+      setTrackTitle(trackName || 'Track');
       playBtn.disabled = false;
 
       audioEl.addEventListener('ended', function onEnded() {
@@ -3018,7 +3082,7 @@ footer .music-note {
           return;
         }
         setPlayState(false);
-        mpTitle.textContent = 'No tracks available';
+        setTrackTitle('No tracks available');
         mpStatus.textContent = 'Unavailable';
       });
     }
@@ -3069,6 +3133,7 @@ footer .music-note {
       if (!isParticlesReactive()) beat = 0;
     });
 
+    window.addEventListener('resize', syncTitleMarquee);
     loadTrackByIndex(0);
     applyMute();
   })();
@@ -3688,6 +3753,30 @@ footer .music-note {
     var sortEl = document.getElementById('ghSort');
     if (!loading || !sortEl) return;
 
+    function applyFetchedRepos(repos) {
+      if (!Array.isArray(repos)) throw new Error('api_error');
+      var hidden = {};
+      GITHUB_HIDDEN_REPOS.forEach(function (name) { hidden[name] = true; });
+      allRepos = repos.filter(function (repo) {
+        return repo && !repo.fork && repo.name && !hidden[repo.name];
+      });
+      mergeReadmeSnippetCacheIntoRepos(allRepos);
+      enrichReposWithReadmeSummaries(allRepos, loading, function () {
+        writeGithubCache(allRepos);
+        finishGithubSectionUi(loading);
+      });
+    }
+
+    function fetchLatestRepos() {
+      return fetch(GITHUB_API_URL, { headers: { 'Accept': 'application/vnd.github+json' } })
+        .then(function (res) {
+          if (res.status === 403 || res.status === 429) throw new Error('rate_limit');
+          if (!res.ok) throw new Error('api_error');
+          return res.json();
+        })
+        .then(applyFetchedRepos);
+    }
+
     sortEl.addEventListener('change', renderGhGrid);
     var cached = readGithubCache();
     if (cached) {
@@ -3697,28 +3786,11 @@ footer .music-note {
         writeGithubCache(allRepos);
         finishGithubSectionUi(loading);
       });
+      fetchLatestRepos().catch(function () {});
       return;
     }
 
-    fetch(GITHUB_API_URL, { headers: { 'Accept': 'application/vnd.github+json' } })
-      .then(function (res) {
-        if (res.status === 403 || res.status === 429) throw new Error('rate_limit');
-        if (!res.ok) throw new Error('api_error');
-        return res.json();
-      })
-      .then(function (repos) {
-        if (!Array.isArray(repos)) throw new Error('api_error');
-        var hidden = {};
-        GITHUB_HIDDEN_REPOS.forEach(function (name) { hidden[name] = true; });
-        allRepos = repos.filter(function (repo) {
-          return repo && !repo.fork && repo.name && !hidden[repo.name];
-        });
-        mergeReadmeSnippetCacheIntoRepos(allRepos);
-        enrichReposWithReadmeSummaries(allRepos, loading, function () {
-          writeGithubCache(allRepos);
-          finishGithubSectionUi(loading);
-        });
-      })
+    fetchLatestRepos()
       .catch(function (err) {
         loading.style.display = 'none';
         showGhError(err.message);
