@@ -1468,6 +1468,7 @@ footer {
   padding:2rem 4rem;
   border-top:1px solid rgba(255,255,255,0.04);
   display:flex; justify-content:space-between; align-items:center;
+  flex-wrap: wrap;
   color:var(--txt3);
   font-family:'DM Mono',monospace;
   font-size:.72rem;
@@ -1487,6 +1488,10 @@ footer {
 }
 .music-note a { color: var(--accent); }
 .music-note strong { color: var(--txt2); font-weight: 600; }
+footer .music-note {
+  width: 100%;
+  margin: 0 0 1rem;
+}
 
 @keyframes fadeUp {
   from { opacity:0; transform:translateY(20px); }
@@ -2446,12 +2451,11 @@ footer {
 
 </main>
 
-<div class="music-note" aria-label="Music credits and rights note">
-  <strong>Music Credits:</strong> Background tracks on this site are original works created by Aditya Bhaskar using BandLab. These tracks are inspired by contemporary film and electronic music styles, and no third-party copyrighted recordings are sampled.
-  <a href="https://www.bandlab.com/utdady" target="_blank" rel="noopener noreferrer">BandLab profile</a>
-</div>
-
 <footer>
+  <div class="music-note" aria-label="Music credits and rights note">
+    <strong>Music Credits:</strong> Background tracks on this site are original works created by Aditya Bhaskar using BandLab. These tracks are inspired by contemporary film and electronic music styles, and no third-party copyrighted recordings are sampled.
+    <a href="https://www.bandlab.com/utdady" target="_blank" rel="noopener noreferrer">BandLab profile</a>
+  </div>
   <span>&copy; 2026 Aditya Bhaskar</span>
   <span>Built with care — no lorem ipsum</span>
 </footer>
