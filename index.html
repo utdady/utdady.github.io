@@ -2850,7 +2850,7 @@ footer .music-note {
       },
       {
         title: 'stellarstellar',
-        sources: ['private-audio/stellarstellar.mp3']
+        sources: ['private-audio/stellarstellar.mp3', 'stellarstellar.mp3']
       }
     ];
     var currentTrackIndex = 0;
@@ -3006,14 +3006,19 @@ footer .music-note {
       tryNext();
     }
 
-    function loadTrackByIndex(nextIndex) {
+    function loadTrackByIndex(nextIndex, attempts) {
       if (!playlist.length) return;
+      var tried = attempts || 0;
       var normalized = ((nextIndex % playlist.length) + playlist.length) % playlist.length;
       currentTrackIndex = normalized;
       var track = playlist[currentTrackIndex];
       loadTrackWithFallback(track.sources, track.title, null, function () {
+        if (tried < playlist.length - 1) {
+          loadTrackByIndex(currentTrackIndex + 1, tried + 1);
+          return;
+        }
         setPlayState(false);
-        mpTitle.textContent = 'Track missing';
+        mpTitle.textContent = 'No tracks available';
         mpStatus.textContent = 'Unavailable';
       });
     }
