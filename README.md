@@ -340,6 +340,16 @@ The optional section blocks have styling for h3 (the block title), h4, p, and ul
 * Fixed z-index / scrolling issue with mobile menu
 * Mobile menu now closes once a nav element is hit
 
+## Music Credits & Rights
+
+Background music used on this portfolio is original and created by Aditya Bhaskar using BandLab.
+
+- Tracks are inspired by contemporary film and electronic music styles.
+- No third-party copyrighted recordings are sampled.
+- BandLab profile: [bandlab.com/utdady](https://www.bandlab.com/utdady)
+
+If you believe any content infringes your rights, please open an issue or contact me directly.
+
 ## License
 
 Completely free (MIT)! See [LICENSE.md](LICENSE.md) for more.
