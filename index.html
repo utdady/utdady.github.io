@@ -1627,7 +1627,7 @@ footer {
   color: var(--txt3);
 }
 #mp-controls { display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0; }
-#mp-play-btn, #mp-mute-btn {
+#mp-prev-btn, #mp-play-btn, #mp-next-btn, #mp-mute-btn {
   width: 26px;
   height: 26px;
   display: flex;
@@ -1642,8 +1642,8 @@ footer {
   padding: 0;
   -webkit-tap-highlight-color: transparent;
 }
-#mp-play-btn svg, #mp-mute-btn svg { width: 11px; height: 11px; }
-#mp-play-btn:hover:not(:disabled), #mp-mute-btn:hover {
+#mp-prev-btn svg, #mp-play-btn svg, #mp-next-btn svg, #mp-mute-btn svg { width: 11px; height: 11px; }
+#mp-prev-btn:hover, #mp-play-btn:hover:not(:disabled), #mp-next-btn:hover, #mp-mute-btn:hover {
   background: rgba(0,229,195,0.16);
   border-color: rgba(0,229,195,0.45);
   transform: scale(1.1);
@@ -1654,11 +1654,14 @@ footer {
   -webkit-appearance: none;
   appearance: none;
   width: 52px;
-  height: 3px;
+  min-width: 52px;
+  flex: 0 0 52px;
+  height: 18px;
   background: transparent;
   border-radius: 999px;
   outline: none;
   cursor: pointer;
+  touch-action: pan-y;
 }
 #mp-vol::-webkit-slider-runnable-track {
   height: 3px;
@@ -1711,16 +1714,18 @@ footer {
     min-width: 46px;
     min-height: 46px;
   }
-  #mp-play-btn, #mp-mute-btn {
+  #mp-prev-btn, #mp-play-btn, #mp-next-btn, #mp-mute-btn {
     width: 32px;
     height: 32px;
     min-width: 32px;
     min-height: 32px;
   }
-  #mp-play-btn svg, #mp-mute-btn svg { width: 12px; height: 12px; }
+  #mp-prev-btn svg, #mp-play-btn svg, #mp-next-btn svg, #mp-mute-btn svg { width: 12px; height: 12px; }
   #mp-vol {
     width: 56px;
-    height: 3px;
+    min-width: 56px;
+    flex-basis: 56px;
+    height: 18px;
   }
   #mp-vol::-webkit-slider-thumb {
     width: 11px;
@@ -2451,9 +2456,15 @@ footer {
       <span id="mp-status">Muted</span>
     </div>
     <div id="mp-controls">
+      <button type="button" id="mp-prev-btn" aria-label="Previous track" title="Previous track">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="11,12 19,6 19,18"/><polygon points="5,12 13,6 13,18"/></svg>
+      </button>
       <button type="button" id="mp-play-btn" aria-label="Play / pause" title="Play / Pause">
         <svg id="mp-play-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
         <svg id="mp-pause-icon" viewBox="0 0 24 24" fill="currentColor" style="display:none" aria-hidden="true"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      </button>
+      <button type="button" id="mp-next-btn" aria-label="Next track" title="Next track">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="13,12 5,6 5,18"/><polygon points="19,12 11,6 11,18"/></svg>
       </button>
       <button type="button" id="mp-mute-btn" class="muted" aria-label="Unmute" title="Muted — click to unmute">
         <svg id="mp-muted-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
@@ -2596,6 +2607,12 @@ footer {
       [0.88, 0.98]
     ];
 
+    var BIT_GLYPHS = ['0', '1', '0', '1', '0', '1', '{', '}', '/', '<', '>', ';'];
+
+    function pickGlyph() {
+      return BIT_GLYPHS[Math.floor(Math.random() * BIT_GLYPHS.length)];
+    }
+
     function makeParticle() {
       var col = PALETTE[Math.floor(Math.random() * PALETTE.length)];
       var startX = Math.random() < 0.15 ? -Math.random() * 200 : Math.random() * W;
@@ -2605,10 +2622,12 @@ footer {
         baseSpeed: 0.4 + Math.random() * 0.7,
         vx: 0,
         vy: (Math.random() - 0.5) * 0.14,
-        r: 1.2 + Math.random() * 1.6,
+        r: 1.6 + Math.random() * 1.8,
         alpha: 0.18 + Math.random() * 0.32,
         col: col,
-        colIdx: Math.floor(Math.random() * PALETTE.length)
+        colIdx: Math.floor(Math.random() * PALETTE.length),
+        glyph: pickGlyph(),
+        glyphTimer: Math.random() * 60
       };
     }
 
@@ -2710,17 +2729,22 @@ footer {
           }
         }
 
-        var speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-        var trailLen = 3.5 + speed * 4;
-        var drawR = p.r * 0.75;
         var rgb = c.r + ',' + c.g + ',' + c.b;
         var noteBoost = isParticlesReactive() ? ne * 0.9 : 0;
-        var al = Math.min(p.alpha * (1 + beat * 0.3) + noteBoost * 0.55, 0.95);
-        var glowR = drawR;
+        var baseAlpha = Math.min(p.alpha * (1 + beat * 0.25) + noteBoost * 0.5, 0.95);
+        var chipSize = 2.4 + p.r * 1.2;
+        var radius = chipSize * 0.32;
+        var halfChip = chipSize * 0.5;
 
-        if (isParticlesReactive() && ne > 0.18) {
-          var glowOpacity = ne * 0.22;
-          var haloR = drawR * (2.3 + noteBoost * 2.6);
+        p.glyphTimer -= 1;
+        if (p.glyphTimer <= 0) {
+          p.glyph = pickGlyph();
+          p.glyphTimer = 30 + Math.random() * 90;
+        }
+
+        if (isParticlesReactive() && ne > 0.2) {
+          var glowOpacity = Math.min(0.06 + ne * 0.32, 0.42);
+          var haloR = chipSize * (2.2 + noteBoost * 2.4);
           var grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, haloR);
           grad.addColorStop(0, 'rgba(' + rgb + ',' + glowOpacity + ')');
           grad.addColorStop(1, 'rgba(' + rgb + ',0)');
@@ -2731,16 +2755,22 @@ footer {
         }
 
         ctx.beginPath();
-        ctx.moveTo(p.x - p.vx * trailLen, p.y - p.vy * trailLen);
-        ctx.lineTo(p.x, p.y);
-        ctx.strokeStyle = 'rgba(' + rgb + ',' + al * 0.5 + ')';
-        ctx.lineWidth = drawR * (0.8 + noteBoost * 0.9);
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, drawR, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(' + rgb + ',' + al + ')';
+        if (ctx.roundRect) {
+          ctx.roundRect(p.x - halfChip, p.y - halfChip, chipSize, chipSize, radius);
+        } else {
+          ctx.rect(p.x - halfChip, p.y - halfChip, chipSize, chipSize);
+        }
+        ctx.fillStyle = 'rgba(' + rgb + ',' + baseAlpha + ')';
         ctx.fill();
+
+        if (isParticlesReactive() && noteBoost > 0.22) {
+          var glyphAlpha = Math.min(noteBoost * 1.4, 0.9);
+          ctx.font = '600 ' + Math.max(8, chipSize * 1.6).toFixed(1) + 'px "DM Mono", ui-monospace, monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = 'rgba(' + rgb + ',' + glyphAlpha + ')';
+          ctx.fillText(p.glyph, p.x, p.y + 0.5);
+        }
       }
 
       raf = requestAnimationFrame(draw);
@@ -2776,7 +2806,9 @@ footer {
     var orbBtn = document.getElementById('mp-orb');
     var orbVinyl = document.getElementById('mp-orb-vinyl');
     var orbBars = document.getElementById('mp-orb-bars');
+    var prevBtn = document.getElementById('mp-prev-btn');
     var playBtn = document.getElementById('mp-play-btn');
+    var nextBtn = document.getElementById('mp-next-btn');
     var muteBtn = document.getElementById('mp-mute-btn');
     var mutedIcon = document.getElementById('mp-muted-icon');
     var soundIcon = document.getElementById('mp-sound-icon');
@@ -2787,6 +2819,17 @@ footer {
     var pauseIcon = document.getElementById('mp-pause-icon');
     var isMuted = true;
     var mpIgnoreOutsideCloseUntil = 0;
+    var playlist = [
+      {
+        title: 'canyouhearlamusica',
+        sources: ['private-audio/canyouhearlamusica.mp3', 'canyouhearlamusica.mp3']
+      },
+      {
+        title: 'stellarstellar',
+        sources: ['private-audio/stellarstellar.mp3']
+      }
+    ];
+    var currentTrackIndex = 0;
 
     function isParticlesReactive() {
       if (!musicActive || !audioEl) return false;
@@ -2910,7 +2953,7 @@ footer {
       playBtn.disabled = false;
 
       audioEl.addEventListener('ended', function onEnded() {
-        setPlayState(false);
+        playNextTrack();
       });
 
       audioEl.play().then(function () {
@@ -2918,6 +2961,53 @@ footer {
       }).catch(function () {
         setPlayState(false);
       });
+    }
+
+    function loadTrackWithFallback(sourceList, trackName, onLoaded, onFailed) {
+      var idx = 0;
+      function tryNext() {
+        if (idx >= sourceList.length) {
+          if (typeof onFailed === 'function') onFailed();
+          else setPlayState(false);
+          return;
+        }
+        var source = sourceList[idx++];
+        setupAudio(
+          source,
+          trackName,
+          tryNext
+        );
+        if (typeof onLoaded === 'function') onLoaded();
+      }
+      tryNext();
+    }
+
+    function loadTrackByIndex(nextIndex) {
+      if (!playlist.length) return;
+      var normalized = ((nextIndex % playlist.length) + playlist.length) % playlist.length;
+      currentTrackIndex = normalized;
+      var track = playlist[currentTrackIndex];
+      loadTrackWithFallback(track.sources, track.title, null, function () {
+        setPlayState(false);
+        mpTitle.textContent = 'Track missing';
+        mpStatus.textContent = 'Unavailable';
+      });
+    }
+
+    function playNextTrack() {
+      if (!playlist.length) {
+        setPlayState(false);
+        return;
+      }
+      loadTrackByIndex(currentTrackIndex + 1);
+    }
+
+    function playPrevTrack() {
+      if (!playlist.length) {
+        setPlayState(false);
+        return;
+      }
+      loadTrackByIndex(currentTrackIndex - 1);
     }
 
     muteBtn.addEventListener('click', function () {
@@ -2937,28 +3027,20 @@ footer {
       }
     });
 
+    prevBtn.addEventListener('click', function () {
+      playPrevTrack();
+    });
+
+    nextBtn.addEventListener('click', function () {
+      playNextTrack();
+    });
+
     volSlider.addEventListener('input', function () {
       if (audioEl) audioEl.volume = parseFloat(volSlider.value);
       if (!isParticlesReactive()) beat = 0;
     });
 
-    function loadTrackWithFallback(sourceList, trackName) {
-      var idx = 0;
-      function tryNext() {
-        if (idx >= sourceList.length) {
-          setPlayState(false);
-          return;
-        }
-        var source = sourceList[idx++];
-        setupAudio(source, trackName, tryNext);
-      }
-      tryNext();
-    }
-
-    loadTrackWithFallback(
-      ['private-audio/canyouhearlamusica.mp3', 'canyouhearlamusica.mp3'],
-      'canyouhearlamusica'
-    );
+    loadTrackByIndex(0);
     applyMute();
   })();
 
